@@ -1,7 +1,6 @@
 import React from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { formatRupiah } from "../../utils/format-rupiah";
 import BounceLoader from "react-spinners/BounceLoader";
 import {
   LayoutOne,
@@ -9,7 +8,6 @@ import {
   Button,
   Table,
   InputText,
-  Badge,
   ButtonCircle,
   CardAlert,
 } from "upkit";
@@ -21,24 +19,24 @@ import TopBar from "../../components/TopBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
 import { config } from "../../config";
-import { setPage, setKeyword } from "../../features/Products/actions";
-import { deleteProduct } from "../../api/product";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { fetchProgress, setKeyword } from "../../features/Progress/actions";
+import { deleteProgress } from "../../api/progress";
 
 const ManagementProgress = () => {
   let dispatch = useDispatch();
   const { params } = useRouteMatch();
   let [status, setStatus] = React.useState("process");
-  let products = useSelector((state) => state.products);
+  let progress = useSelector((state) => state.progress);
   let [delstatus, setDelstatus] = React.useState(0);
   const history = useHistory();
 
   React.useEffect(() => {
     setStatus("process");
-    // dispatch(fetchProducts()); //TODO fetch progress api
+    dispatch(fetchProgress());
     setStatus("success");
     setDelstatus(0);
-  }, [dispatch, delstatus, products.currentPage, products.keyword]);
+  }, [dispatch, delstatus, progress.currentPage, progress.keyword]);
 
   const notifDelete = () =>
     toast.success("Delete Success !", {
@@ -62,37 +60,38 @@ const ManagementProgress = () => {
     {
       Header: "Gambar",
       accessor: (items) => {
+        const images = items.images;
         return (
-          <img
-            style={{ height: 40 }}
-            src={`${config.api_host}/upload/${items.image_url}`}
-            alt="gambarProduk"
-          />
+          <div
+            style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
+          >
+            {images.map((image, index) => (
+              <img
+                key={index}
+                src={`${config.api_host}/public/upload/${image.imageUrl}`}
+                alt={`${index + 1}`}
+                style={{ width: "50px", height: "auto", marginRight: "5px" }}
+              />
+            ))}
+          </div>
         );
       },
     },
-    { Header: "Nama", accessor: "name" },
-    { Header: "Harga", accessor: (items) => formatRupiah(items.price) },
-    { Header: "Diskon", accessor: "discount" },
-    {
-      Header: "Kategori",
-      accessor: (items) => {
-        return <Badge color="blue">{items.category.name}</Badge>;
-      },
-    },
+    { Header: "Nama", accessor: "title" },
+    { Header: "Descripsi", accessor: "desc" },
     {
       Header: "Action",
       accessor: (items) => {
         return (
           <div>
-            <Link to={`/edit-produk/${items._id}`}>
+            <Link to={`/edit-produk/${items.id}`}>
               <ButtonCircle icon={<FaEdit />} />
             </Link>
 
             <ButtonCircle
               onClick={() => {
-                if (window.confirm("Delete this product ?")) {
-                  deleteProduct(items._id);
+                if (window.confirm("Delete this Progress ?")) {
+                  deleteProgress(items.id);
                   notifDelete();
                   setDelstatus(1);
                 }
@@ -139,7 +138,7 @@ const ManagementProgress = () => {
         <div className="w-full text-center mb-10 mt-5">
           <InputText
             fullRound
-            value={products.keyword}
+            value={progress.keyword}
             placeholder="cari progress"
             fitContainer
             iconAfter={<ButtonCircle icon={<FaFilter />} />}
@@ -149,16 +148,16 @@ const ManagementProgress = () => {
           />
         </div>
         <br />
-        {products.data.length ? (
+        {progress.data?.data?.length ? (
           <Table
-            items={products.data}
+            items={progress.data.data}
             columns={columns}
-            totalItems={products.totalItems + 15}
-            page={products.currentPage}
-            isLoading={products.status === "process"}
-            perPage={products.perpage}
-            onPageChange={(page) => dispatch(setPage(page))}
-            primaryKey={"_id"}
+            totalItems={progress.data.paging.total_item + 15}
+            page={progress.data.currentPage}
+            isLoading={progress.status === "process"}
+            perPage={progress.data.perpage}
+            // onPageChange={(page) => dispatch(setPage(page))}
+            primaryKey={"id"}
           />
         ) : (
           <LayoutOne size="medium">
@@ -168,6 +167,12 @@ const ManagementProgress = () => {
             />
           </LayoutOne>
         )}
+
+        {/* <img
+          style={{ height: 40 }}
+          src={`${config.api_host}/upload/${progress.data?.data[4].images[0].imageUrl}`}
+          alt="gambarProgress"
+        /> */}
       </div>
     </LayoutOne>
   );

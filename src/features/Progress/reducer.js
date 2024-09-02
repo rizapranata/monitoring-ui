@@ -1,22 +1,64 @@
-import { CLEAR_ITEMS, SET_ITEMS, ADD_IMAGE, REMOVE_IMAGE } from "./constants";
+import {
+  CLEAR_ITEMS,
+  SET_ITEMS,
+  ADD_IMAGE,
+  REMOVE_IMAGE,
+  START_FETCHING_PROGRESS,
+  SUCCESS_FETCHING_PROGRESS,
+  ERROR_FETCHING_PROGRESS,
+  SET_KEYWORD,
+} from "./constants";
+
+const statuslist = {
+  idle: "idle",
+  process: "process",
+  success: "success",
+  error: "error",
+};
 
 const initialState = {
-  imageList: []
-}
+  data: [],
+  keyword: "",
+  imageList: [],
+  status: statuslist.idle,
+};
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
+    case START_FETCHING_PROGRESS:
+      return {
+        ...state,
+        status: statuslist.process,
+      };
+    case SUCCESS_FETCHING_PROGRESS:
+      return {
+        ...state,
+        data: action.data,
+        status: statuslist.success,
+      };
+    case ERROR_FETCHING_PROGRESS:
+      return {
+        ...state,
+        status: statuslist.error,
+      };
+    case SET_KEYWORD:
+      return {
+        ...state,
+        keyword: action.keyword,
+      };
     case ADD_IMAGE:
-        return {
-          ...state,
-          imageList: [...state.imageList, action.item]
-        };
+      return {
+        ...state,
+        imageList: [...state.imageList, action.item],
+      };
 
     case REMOVE_IMAGE:
       return {
         ...state,
-        imageList: state.imageList.filter((image) => image.imageId !== action.item)
-      }
+        imageList: state.imageList.filter(
+          (image) => image.imageId !== action.item
+        ),
+      };
 
     case CLEAR_ITEMS:
       return [];

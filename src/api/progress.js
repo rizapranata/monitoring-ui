@@ -2,9 +2,32 @@ import axios from "axios";
 import { config } from "../config";
 
 export async function getProgress(params) {
-  return await axios.get(`${config.api_host}/api/progress`, {
-    params,
-  });
+  let { token } = localStorage.getItem("auth")
+    ? JSON.parse(localStorage.getItem("auth"))
+    : {};
+
+  console.log("params:", params);
+
+  return await axios
+    .get(`${config.api_host}/api/progress`, {
+      params,
+      headers: {
+        authorization: `${token}`,
+      },
+    })
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      if (error.response) {
+        console.log("error response: ", error.response);
+      } else if (error.request) {
+        console.log("error request: ", error.request);
+      } else {
+        console.log("Error message", error.message);
+      }
+      console.log(error.config);
+    });
 }
 
 export async function getProgressId(progress_id) {
@@ -12,28 +35,30 @@ export async function getProgressId(progress_id) {
 }
 
 export async function createProgress(payload) {
- let { token } = localStorage.getItem("auth")
+  let { token } = localStorage.getItem("auth")
     ? JSON.parse(localStorage.getItem("auth"))
     : {};
 
-  return await axios.post(`${config.api_host}/api/progress`, payload, {
+  return await axios
+    .post(`${config.api_host}/api/progress`, payload, {
       headers: {
         authorization: `${token}`,
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     })
     .then((response) => {
       return response;
-    }).catch((error) => {
+    })
+    .catch((error) => {
       if (error.response) {
-        console.log("error response: ",error.response);
+        console.log("error response: ", error.response);
       } else if (error.request) {
-        console.log("error request: ",error.request);
+        console.log("error request: ", error.request);
       } else {
-        console.log('Error message', error.message);
+        console.log("Error message", error.message);
       }
       console.log(error.config);
-    })
+    });
 }
 
 export async function updateProduct(payload, product_id) {
@@ -53,15 +78,20 @@ export async function updateProduct(payload, product_id) {
   );
 }
 
-export async function deleteProduct(product_id) {
+export async function deleteProgress(progressId) {
   let { token } = localStorage.getItem("auth")
     ? JSON.parse(localStorage.getItem("auth"))
     : {};
 
-  return await axios.delete(`${config.api_host}/api/products/${product_id}`, {
-    headers: {
-      authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return await axios
+    .delete(`${config.api_host}/api/progress/${progressId}`, {
+      headers: {
+        authorization: `${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      console.log("res delete:", res);
+      return res;
+    });
 }
