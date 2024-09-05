@@ -7,6 +7,8 @@ import {
   SUCCESS_FETCHING_PROGRESS,
   ERROR_FETCHING_PROGRESS,
   SET_KEYWORD,
+  EDIT_IMAGE,
+  CLEAR_IMAGE,
 } from "./constants";
 
 const statuslist = {
@@ -51,6 +53,22 @@ export default function reducer(state = initialState, action) {
         ...state,
         imageList: [...state.imageList, action.item],
       };
+
+    case EDIT_IMAGE:
+      return {
+        ...state,
+        imageList: state.imageList.map((item) =>
+          item.id === action.payload.id
+            ? { ...item, ...action.payload.updatedData }
+            : item
+        ),
+      };
+
+    case CLEAR_IMAGE: 
+    return {
+      ...state,
+      imageList: action.item
+    }
 
     case REMOVE_IMAGE:
       return {

@@ -18,16 +18,6 @@ import { addImage, removeImage } from "../../features/Progress/actions";
 import { useRouteMatch } from "react-router-dom";
 import TiDeleteOutline from "@meronex/icons/ti/TiDeleteOutline";
 
-const generateRandomId = (length = 8) => {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-};
-
 const ProgressAdd = () => {
   let history = useHistory();
   const { params } = useRouteMatch();
@@ -92,7 +82,6 @@ const ProgressAdd = () => {
     const { data } = await createProgress(payload);
 
     if (data.error) {
-      console.log("---- > ada error ");
       notifError();
       return;
     }

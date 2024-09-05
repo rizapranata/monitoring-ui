@@ -22,6 +22,7 @@ import { deleteProject } from "../../api/project";
 import { fetchProject, setKeyword } from "../../features/Projects/actions";
 import { useRouteMatch } from "react-router-dom";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import BiDetail from '@meronex/icons/bi/BiDetail';
 
 const ManagementProject = () => {
   const dispatch = useDispatch();
@@ -59,25 +60,18 @@ const ManagementProject = () => {
   };
 
   const columns = [
-    { Header: "Nama", accessor: "name" },
+    { Header: "Nama Project", accessor: "name" },
     { Header: "Deskripsi", accessor: "desc" },
     { Header: "Nama Client", accessor: "usernameClient" },
-    // {
-    //   Header: "Kategori",
-    //   accessor: (items) => {
-    //     return <Badge color="blue">{items.category.name}</Badge>;
-    //   },
-    // },
     {
       Header: "Action",
       accessor: (items) => {
         return (
           <div>
-            {/* <Link to={`/manajement-progress/${items.name}`}>
+            <Link to={`/project/edit/${items.id}`}>
               <ButtonCircle icon={<FaEdit />} />
-            </Link> */}
-            <ButtonCircle icon={<FaEdit />} onClick={() => handleClick(items.name)} />
-
+            </Link>
+            <ButtonCircle icon={<BiDetail />} onClick={() => handleClick(items.name)} />
             <ButtonCircle
               onClick={() => {
                 if (window.confirm("Delete this product ?")) {

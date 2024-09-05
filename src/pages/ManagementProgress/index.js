@@ -14,7 +14,6 @@ import {
 import FaFilter from "@meronex/icons/fa/FaFilter";
 import FaEdit from "@meronex/icons/fa/FaEdit";
 import FaTrash from "@meronex/icons/fa/FaTrash";
-import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
@@ -52,8 +51,13 @@ const ManagementProgress = () => {
   const handleClick = () => {
     const username = params.username;
     const projectName = params.projectName;
-
     history.push(`/progress/tambah/${username}/${projectName}`);
+  };
+
+  const handleEdit = (progressId) => {
+    const username = params.username;
+    const projectName = params.projectName;
+    history.push(`/progress/edit/${username}/${projectName}/${progressId}`);
   };
 
   const columns = [
@@ -84,11 +88,12 @@ const ManagementProgress = () => {
       accessor: (items) => {
         return (
           <div>
-            <Link to={`/edit-produk/${items.id}`}>
-              <ButtonCircle icon={<FaEdit />} />
-            </Link>
-
             <ButtonCircle
+              icon={<FaEdit />}
+              onClick={() => handleEdit(items.id)}
+            />
+            <ButtonCircle
+              icon={<FaTrash />}
               onClick={() => {
                 if (window.confirm("Delete this Progress ?")) {
                   deleteProgress(items.id);
@@ -96,7 +101,6 @@ const ManagementProgress = () => {
                   setDelstatus(1);
                 }
               }}
-              icon={<FaTrash />}
             />
           </div>
         );
@@ -147,7 +151,6 @@ const ManagementProgress = () => {
             }}
           />
         </div>
-        <br />
         {progress.data?.data?.length ? (
           <Table
             items={progress.data.data}

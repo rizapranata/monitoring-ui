@@ -8,6 +8,8 @@ import {
   SUCCESS_FETCHING_PROGRESS,
   ERROR_FETCHING_PROGRESS,
   SET_KEYWORD,
+  EDIT_IMAGE,
+  CLEAR_IMAGE,
 } from "./constants";
 import { getProgress } from "../../api/progress";
 
@@ -72,6 +74,20 @@ export function addImage(item) {
     type: ADD_IMAGE,
     item,
   };
+}
+
+export function editImage(item) {
+  return {
+    type: EDIT_IMAGE,
+    item
+  }
+}
+
+export function clearImage(item) {
+  return {
+    type: CLEAR_IMAGE,
+    item
+  }
 }
 
 export function removeImage(item) {

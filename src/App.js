@@ -41,6 +41,7 @@ import ManagementProgress from "./pages/ManagementProgress";
 import ProjectAdd from "./pages/ProjectAdd";
 import ManagementProject from "./pages/ManagementProject";
 import ProjectClient from "./pages/ManagementProject/projectClient";
+import ProgressEdit from "./pages/ProgressEdit";
 
 function App() {
   React.useEffect(() => {
@@ -93,6 +94,9 @@ function App() {
           </GuardAdminRoute>
           <GuardAdminRoute path="/progress/tambah/:username/:projectName">
             <ProgressAdd />
+          </GuardAdminRoute>
+          <GuardAdminRoute path="/progress/edit/:username/:projectName/:progressId">
+            <ProgressEdit />
           </GuardAdminRoute>
           <GuardAdminRoute path="/project-client">
             <ProjectClient />
