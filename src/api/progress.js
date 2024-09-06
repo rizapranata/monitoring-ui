@@ -21,12 +21,7 @@ export async function getProgress(params) {
     .catch((error) => {
       if (error.response) {
         console.log("error response: ", error.response);
-      } else if (error.request) {
-        console.log("error request: ", error.request);
-      } else {
-        console.log("Error message", error.message);
       }
-      console.log(error.config);
     });
 }
 
@@ -64,22 +59,17 @@ export async function createProgress(payload) {
     .catch((error) => {
       if (error.response) {
         console.log("error response: ", error.response);
-      } else if (error.request) {
-        console.log("error request: ", error.request);
-      } else {
-        console.log("Error message", error.message);
       }
-      console.log(error.config);
     });
 }
 
-export async function updateProgress(payload, progressId) {
+export async function updateProgress(payload) {
   let { token } = localStorage.getItem("auth")
     ? JSON.parse(localStorage.getItem("auth"))
     : {};
 
   return await axios
-    .put(`${config.api_host}/api/progress/${progressId}`, payload, {
+    .put(`${config.api_host}/api/progress/${payload.id}`, payload, {
       headers: {
         authorization: `${token}`,
       },
@@ -90,12 +80,7 @@ export async function updateProgress(payload, progressId) {
     .catch((error) => {
       if (error.response) {
         console.log("error response: ", error.response);
-      } else if (error.request) {
-        console.log("error request: ", error.request);
-      } else {
-        console.log("Error message", error.message);
       }
-      console.log(error.config);
     });
 }
 
@@ -112,7 +97,6 @@ export async function deleteProgress(progressId) {
       },
     })
     .then((res) => {
-      console.log("res delete:", res);
       return res;
     });
 }
@@ -135,12 +119,7 @@ export async function addProgressImage(payload) {
     .catch((error) => {
       if (error.response) {
         console.log("error response: ", error.response);
-      } else if (error.request) {
-        console.log("error request: ", error.request);
-      } else {
-        console.log("Error message", error.message);
       }
-      console.log(error.config);
     });
 }
 

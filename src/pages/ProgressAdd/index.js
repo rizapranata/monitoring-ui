@@ -14,7 +14,11 @@ import { useHistory } from "react-router-dom";
 import { rules } from "./validations";
 import { createProgress } from "../../api/progress";
 import { useDispatch, useSelector } from "react-redux";
-import { addImage, removeImage } from "../../features/Progress/actions";
+import {
+  addImage,
+  clearImage,
+  removeImage,
+} from "../../features/Progress/actions";
 import { useRouteMatch } from "react-router-dom";
 import TiDeleteOutline from "@meronex/icons/ti/TiDeleteOutline";
 
@@ -49,9 +53,7 @@ const ProgressAdd = () => {
   const onChangeHandler = (e) => {
     if (e.target.files.length) {
       const imeageFile = e.target.files[0];
-      // const imageId = generateRandomId();
       const payload = {
-        // imageId,
         imeageFile,
       };
 
@@ -86,6 +88,7 @@ const ProgressAdd = () => {
       return;
     }
 
+    dispatch(clearImage(""));
     history.goBack();
   };
 
@@ -156,39 +159,40 @@ const ProgressAdd = () => {
                 alignItems: "center",
               }}
             >
-              {imageList.map((image, index) => (
-                <div
-                  key={index}
-                  style={{
-                    margin: "10px",
-                    borderWidth: 1,
-                    borderColor: "green",
-                    borderRadius: 6,
-                    position: "relative",
-                  }}
-                >
+              {imageList.length > 0 &&
+                imageList.map((image, index) => (
                   <div
+                    key={index}
                     style={{
-                      position: "absolute",
-                      top: "-5px",
-                      right: "-5px",
-                      background: "red",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "50%",
-                      cursor: "pointer",
+                      margin: "10px",
+                      borderWidth: 1,
+                      borderColor: "green",
+                      borderRadius: 6,
+                      position: "relative",
                     }}
-                    onClick={() => handleDelete(image.imageId)}
                   >
-                    <TiDeleteOutline />
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "-5px",
+                        right: "-5px",
+                        background: "red",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleDelete(image.imageId)}
+                    >
+                      <TiDeleteOutline />
+                    </div>
+                    <img
+                      src={URL.createObjectURL(image.imeageFile)}
+                      alt={image.imeageFile.nmae}
+                      style={{ width: "100px", height: "100px", margin: 10 }}
+                    />
                   </div>
-                  <img
-                    src={URL.createObjectURL(image.imeageFile)}
-                    alt={image.imeageFile.nmae}
-                    style={{ width: "100px", height: "100px", margin: 10 }}
-                  />
-                </div>
-              ))}
+                ))}
             </div>
           </label>
           <br />

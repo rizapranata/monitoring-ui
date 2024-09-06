@@ -48,20 +48,48 @@ export async function getProjects(params) {
     });
 }
 
-export async function updateProject(payload, project_id) {
+export async function getProjectsDetails(projectId, params) {
+  let { token } = localStorage.getItem("auth")
+    ? JSON.parse(localStorage.getItem("auth"))
+    : {};
+
+  console.log("params:", params);
+
+  return await axios
+    .get(`${config.api_host}/api/project/${projectId}`, {
+      params,
+      headers: {
+        authorization: `${token}`,
+      },
+    })
+    .then((response) => {
+      return response;
+    });
+}
+
+export async function updateProject(payload) {
   let { token } = localStorage.getItem("auth")
     ? JSON.parse(localStorage.getItem("auth"))
     : {};
 
   return await axios
-    .put(`${config.api_host}/api/project/${project_id}`, payload, {
+    .put(`${config.api_host}/api/project/${payload.id}`, payload, {
       headers: {
         authorization: `${token}`,
-        "Content-Type": "multipart/form-data",
       },
     })
     .then((res) => {
       return res;
+    })
+    .catch((error) => {
+      if (error.response) {
+        console.log("error response: ", error.response);
+      } else if (error.request) {
+        console.log("error request: ", error.request);
+      } else {
+        console.log("Error message", error.message);
+      }
+      console.log(error.config);
     });
 }
 

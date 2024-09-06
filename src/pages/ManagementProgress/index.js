@@ -170,12 +170,6 @@ const ManagementProgress = () => {
             />
           </LayoutOne>
         )}
-
-        {/* <img
-          style={{ height: 40 }}
-          src={`${config.api_host}/upload/${progress.data?.data[4].images[0].imageUrl}`}
-          alt="gambarProgress"
-        /> */}
       </div>
     </LayoutOne>
   );

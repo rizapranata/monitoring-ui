@@ -46,12 +46,12 @@ const ProgressEdit = () => {
     setAddImageStatus(0);
     setStatus("process");
     getProgressDetail(params?.progressId)
-    .then(({ data }) => {
-      setValue("title", data.data.title);
-      setValue("desc", data.data.desc);
-      setImages(data.data.images);
-    })
-    .finally(() => setStatus("idle"));
+      .then(({ data }) => {
+        setValue("title", data.data.title);
+        setValue("desc", data.data.desc);
+        setImages(data.data.images);
+      })
+      .finally(() => setStatus("idle"));
 
     register({ name: "title" }, rules.title);
     register({ name: "desc" }, rules.desc);
@@ -79,18 +79,29 @@ const ProgressEdit = () => {
       progress: undefined,
     });
 
-    const notifAddImage = () =>
-      toast.success("Tambah Gambar Success !", {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+  const notifAddImage = () =>
+    toast.success("Tambah Gambar Success !", {
+      position: "bottom-center",
+      autoClose: 5000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
 
-  const onChangeHandler = (e) => {
+  const notifSuccessEdit = () =>
+    toast.success("Edit Progress Success !", {
+      position: "bottom-center",
+      autoClose: 5000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
+  const onChangeHandler = async (e) => {
     const progressId = params?.progressId;
     if (e.target.files.length) {
       const image = e.target.files[0];
@@ -99,17 +110,13 @@ const ProgressEdit = () => {
       payload.append("images", image);
       payload.append("progressId", progressId);
 
-      addProgressImage(payload)
-        .then(({ data }) => {
-          console.log("result add image:", data);
-          if (data.data.count > 0) {
-            notifAddImage();
-            setAddImageStatus(1);
-          }
-        })
-        .catch((e) => {
-          console.log("error:", e);
-        });
+      await addProgressImage(payload).then(({ data }) => {
+        console.log("add img:", data);
+        if (data.success === true) {
+          notifAddImage();
+          setAddImageStatus(1);
+        }
+      });
     }
   };
 
@@ -118,14 +125,18 @@ const ProgressEdit = () => {
     dispatch(removeImage(id));
   };
 
-  const handleDeleteFromDB = (id) => {
+  const handleDeleteImage = async (id) => {
     if (images.length <= 1) {
       notifError();
     } else {
       if (window.confirm("Delete this Image?")) {
-        deleteImageProgress(parseInt(id));
-        notifDelete();
-        setDelstatus(1);
+        await deleteImageProgress(parseInt(id)).then(({ data }) => {
+          console.log("delete img:", data);
+          if (data.success === true) {
+            notifDelete();
+            setDelstatus(1);
+          }
+        });
       }
     }
   };
@@ -135,11 +146,15 @@ const ProgressEdit = () => {
     const payload = {
       id: progressId,
       title: formHook.title,
-      desc: formHook.desc
-    }
+      desc: formHook.desc,
+    };
 
-    let { data } = await updateProgress(payload, progressId);
-    if (data.error) return;
+    const { data } = await updateProgress(payload);
+    if (data.error) {
+      return;
+    } else {
+      notifSuccessEdit();
+    }
 
     history.goBack();
   };
@@ -246,7 +261,7 @@ const ProgressEdit = () => {
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      handleDeleteFromDB(image.id);
+                      handleDeleteImage(image.id);
                     }}
                   >
                     <TiDeleteOutline />

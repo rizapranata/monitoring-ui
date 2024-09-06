@@ -68,7 +68,7 @@ const ManagementProject = () => {
       accessor: (items) => {
         return (
           <div>
-            <Link to={`/project/edit/${items.id}`}>
+            <Link to={`/project/edit/${params?.username}/${items.id}`}>
               <ButtonCircle icon={<FaEdit />} />
             </Link>
             <ButtonCircle icon={<BiDetail />} onClick={() => handleClick(items.name)} />
