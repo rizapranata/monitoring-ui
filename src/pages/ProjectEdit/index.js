@@ -14,8 +14,8 @@ import { useHistory } from "react-router-dom";
 import { rules } from "./validations";
 import { getProjectsDetails, updateProject } from "../../api/project";
 import { useRouteMatch } from "react-router-dom";
-import { toast } from "react-toastify";
 import { BounceLoader } from "react-spinners";
+import ToastComponent from "../../components/ToastComponent";
 
 const ProjectEdit = () => {
   let history = useHistory();
@@ -42,17 +42,6 @@ const ProjectEdit = () => {
     register({ name: "desc" }, rules.desc);
   }, [params?.projectId, register, setValue]);
 
-  const notifSuccessCreate = () =>
-    toast.success("Update Project Success!", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
   // const updateValue = (field, value) =>
   //   setValue(field, value, { shouldValidate: true, shouldDirty: true });
 
@@ -68,7 +57,7 @@ const ProjectEdit = () => {
     if (data.error) {
       return;
     } else {
-      notifSuccessCreate();
+      ToastComponent("success", "Update Project Success!");
     }
 
     history.goBack();

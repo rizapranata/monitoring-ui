@@ -21,6 +21,7 @@ import {
 } from "../../features/Progress/actions";
 import { useRouteMatch } from "react-router-dom";
 import TiDeleteOutline from "@meronex/icons/ti/TiDeleteOutline";
+import ToastComponent from "../../components/ToastComponent";
 
 const ProgressAdd = () => {
   let history = useHistory();
@@ -88,6 +89,7 @@ const ProgressAdd = () => {
       return;
     }
 
+    ToastComponent("success", "Progress success ditambahkan")
     dispatch(clearImage(""));
     history.goBack();
   };

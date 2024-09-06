@@ -22,7 +22,7 @@ import { deleteProject } from "../../api/project";
 import { fetchProject, setKeyword } from "../../features/Projects/actions";
 import { useRouteMatch } from "react-router-dom";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
-import BiDetail from '@meronex/icons/bi/BiDetail';
+import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
 
 const ManagementProject = () => {
   const dispatch = useDispatch();
@@ -71,7 +71,7 @@ const ManagementProject = () => {
             <Link to={`/project/edit/${params?.username}/${items.id}`}>
               <ButtonCircle icon={<FaEdit />} />
             </Link>
-            <ButtonCircle icon={<BiDetail />} onClick={() => handleClick(items.name)} />
+            <ButtonCircle icon={<BiCommentDetail />} onClick={() => handleClick(items.name)} />
             <ButtonCircle
               onClick={() => {
                 if (window.confirm("Delete this product ?")) {

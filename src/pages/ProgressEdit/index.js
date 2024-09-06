@@ -20,21 +20,21 @@ import {
   updateProgress,
 } from "../../api/progress";
 import { useDispatch, useSelector } from "react-redux";
-import { removeImage } from "../../features/Progress/actions";
+import { removeImage, setTitleDesc } from "../../features/Progress/actions";
 import { useRouteMatch } from "react-router-dom";
 import TiDeleteOutline from "@meronex/icons/ti/TiDeleteOutline";
 import { BounceLoader } from "react-spinners";
+import ToastComponent from "../../components/ToastComponent";
 
 const ProgressEdit = () => {
   let history = useHistory();
   const { params } = useRouteMatch();
   const dispatch = useDispatch();
+  const progress = useSelector((store) => store.progress);
   const [status, setStatus] = React.useState("process");
   const [images, setImages] = React.useState([]);
   const [delstatus, setDelstatus] = React.useState(0);
   const [addImageStatus, setAddImageStatus] = React.useState(0);
-  const progressReducer = useSelector((store) => store.progress);
-  const imageList = progressReducer.imageList;
 
   let { handleSubmit, register, errors, watch, getValues, setValue } =
     useForm();
@@ -42,64 +42,27 @@ const ProgressEdit = () => {
   watch();
 
   React.useEffect(() => {
-    setDelstatus(0);
-    setAddImageStatus(0);
     setStatus("process");
     getProgressDetail(params?.progressId)
       .then(({ data }) => {
         setValue("title", data.data.title);
         setValue("desc", data.data.desc);
-        setImages(data.data.images);
       })
       .finally(() => setStatus("idle"));
 
     register({ name: "title" }, rules.title);
     register({ name: "desc" }, rules.desc);
-  }, [params.progressId, register, setValue, delstatus, addImageStatus]);
+  }, [params.progressId, register, setValue]);
 
-  const notifError = () =>
-    toast.error("Ooops..! minimal ada satu gambar.", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
-  const notifDelete = () =>
-    toast.success("Delete Success !", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
-  const notifAddImage = () =>
-    toast.success("Tambah Gambar Success !", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
-  const notifSuccessEdit = () =>
-    toast.success("Edit Progress Success !", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+  React.useEffect(() => {
+    setDelstatus(0);
+    setAddImageStatus(0);
+    getProgressDetail(params?.progressId)
+      .then(({ data }) => {
+        setImages(data.data.images);
+      })
+      .finally(() => setStatus("idle"));
+  }, [delstatus, addImageStatus]);
 
   const onChangeHandler = async (e) => {
     const progressId = params?.progressId;
@@ -113,7 +76,7 @@ const ProgressEdit = () => {
       await addProgressImage(payload).then(({ data }) => {
         console.log("add img:", data);
         if (data.success === true) {
-          notifAddImage();
+          ToastComponent("success", "Tambah Gambar Success !");
           setAddImageStatus(1);
         }
       });
@@ -127,14 +90,14 @@ const ProgressEdit = () => {
 
   const handleDeleteImage = async (id) => {
     if (images.length <= 1) {
-      notifError();
+      ToastComponent("error", "Ooops..! minimal ada satu gambar.");
     } else {
       if (window.confirm("Delete this Image?")) {
         await deleteImageProgress(parseInt(id)).then(({ data }) => {
           console.log("delete img:", data);
           if (data.success === true) {
-            notifDelete();
             setDelstatus(1);
+            ToastComponent("success", "Delete Success!");
           }
         });
       }
@@ -153,7 +116,7 @@ const ProgressEdit = () => {
     if (data.error) {
       return;
     } else {
-      notifSuccessEdit();
+      ToastComponent("success", "Edit Progress Success !");
     }
 
     history.goBack();
@@ -238,87 +201,42 @@ const ProgressEdit = () => {
                 alignItems: "center",
               }}
             >
-              {images.map((image, index) => (
-                <div
-                  key={index}
-                  style={{
-                    margin: "10px",
-                    borderWidth: 1,
-                    borderColor: "green",
-                    borderRadius: 6,
-                    position: "relative",
-                  }}
-                >
+              {images.length > 0 &&
+                images.map((image, index) => (
                   <div
+                    key={index}
                     style={{
-                      position: "absolute",
-                      top: "-5px",
-                      right: "-5px",
-                      background: "red",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "50%",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      handleDeleteImage(image.id);
+                      margin: "10px",
+                      borderWidth: 1,
+                      borderColor: "green",
+                      borderRadius: 6,
+                      position: "relative",
                     }}
                   >
-                    <TiDeleteOutline />
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "-5px",
+                        right: "-5px",
+                        background: "red",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        handleDeleteImage(image.id);
+                      }}
+                    >
+                      <TiDeleteOutline />
+                    </div>
+                    <img
+                      src={`${config.api_host}/public/upload/${image.imageUrl}`}
+                      alt={image.imeageFile}
+                      style={{ width: "100px", height: "100px", margin: 10 }}
+                    />
                   </div>
-                  <img
-                    src={`${config.api_host}/public/upload/${image.imageUrl}`}
-                    alt={image.imeageFile}
-                    style={{ width: "100px", height: "100px", margin: 10 }}
-                  />
-                </div>
-              ))}
-            </div>
-          </label>
-          {/* upload new image */}
-          <label htmlFor="upload-button">
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "start",
-                alignItems: "center",
-              }}
-            >
-              {imageList.map((image, index) => (
-                <div
-                  key={index}
-                  style={{
-                    margin: "10px",
-                    borderWidth: 1,
-                    borderColor: "green",
-                    borderRadius: 6,
-                    position: "relative",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "-5px",
-                      right: "-5px",
-                      background: "red",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "50%",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => handleDelete(image.imageId)}
-                  >
-                    <TiDeleteOutline />
-                  </div>
-                  <img
-                    src={URL.createObjectURL(image.imeageFile)}
-                    alt={image.imeageFile}
-                    style={{ width: "100px", height: "100px", margin: 10 }}
-                  />
-                </div>
-              ))}
+                ))}
             </div>
           </label>
           <br />

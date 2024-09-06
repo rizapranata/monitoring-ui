@@ -22,6 +22,7 @@ const initialState = {
   data: [],
   keyword: "",
   imageList: [],
+  titleAndDesc: {},
   status: statuslist.idle,
 };
 
@@ -64,11 +65,11 @@ export default function reducer(state = initialState, action) {
         ),
       };
 
-    case CLEAR_IMAGE: 
-    return {
-      ...state,
-      imageList: action.item
-    }
+    case CLEAR_IMAGE:
+      return {
+        ...state,
+        imageList: action.item,
+      };
 
     case REMOVE_IMAGE:
       return {
