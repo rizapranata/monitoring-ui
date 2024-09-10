@@ -43,6 +43,7 @@ import ManagementProject from "./pages/ManagementProject";
 import ProjectClient from "./pages/ManagementProject/projectClient";
 import ProgressEdit from "./pages/ProgressEdit";
 import ProjectEdit from "./pages/ProjectEdit";
+import PreviewProgress from "./pages/PreviewProgress";
 
 function App() {
   React.useEffect(() => {
@@ -84,7 +85,7 @@ function App() {
           <GuardAdminRoute path="/edit-produk/:product_id">
             <ProductEdit />
           </GuardAdminRoute>
-          <GuardAdminRoute path="/manajement-progress/:username/:projectName">
+          <GuardAdminRoute path="/manajement-progress/:username/:projectId/:projectName">
             <ManagementProgress />
           </GuardAdminRoute>
           <GuardAdminRoute path="/project/tambah/:username">
@@ -96,7 +97,7 @@ function App() {
           <GuardAdminRoute path="/manajement-project/:username">
             <ManagementProject />
           </GuardAdminRoute>
-          <GuardAdminRoute path="/progress/tambah/:username/:projectName">
+          <GuardAdminRoute path="/progress/tambah/:username/:projectId/:projectName">
             <ProgressAdd />
           </GuardAdminRoute>
           <GuardAdminRoute path="/progress/edit/:username/:projectName/:progressId">
@@ -104,6 +105,9 @@ function App() {
           </GuardAdminRoute>
           <GuardAdminRoute path="/project-client">
             <ProjectClient />
+          </GuardAdminRoute>
+          <GuardAdminRoute path="/progress/preview/:customer/:projectName/:projectId">
+            <PreviewProgress />
           </GuardAdminRoute>
           <GuardDoctorRoute path="/rekam-medis">
             <MedicalRecord />

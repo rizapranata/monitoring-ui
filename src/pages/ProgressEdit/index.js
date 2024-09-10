@@ -8,7 +8,7 @@ import {
   Textarea,
 } from "upkit";
 import TopBar from "../../components/TopBar";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { rules } from "./validations";
@@ -19,8 +19,7 @@ import {
   addProgressImage,
   updateProgress,
 } from "../../api/progress";
-import { useDispatch, useSelector } from "react-redux";
-import { removeImage, setTitleDesc } from "../../features/Progress/actions";
+import { useSelector } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
 import TiDeleteOutline from "@meronex/icons/ti/TiDeleteOutline";
 import { BounceLoader } from "react-spinners";
@@ -29,7 +28,6 @@ import ToastComponent from "../../components/ToastComponent";
 const ProgressEdit = () => {
   let history = useHistory();
   const { params } = useRouteMatch();
-  const dispatch = useDispatch();
   const progress = useSelector((store) => store.progress);
   const [status, setStatus] = React.useState("process");
   const [images, setImages] = React.useState([]);
@@ -62,7 +60,7 @@ const ProgressEdit = () => {
         setImages(data.data.images);
       })
       .finally(() => setStatus("idle"));
-  }, [delstatus, addImageStatus]);
+  }, [delstatus, addImageStatus, params?.progressId]);
 
   const onChangeHandler = async (e) => {
     const progressId = params?.progressId;
@@ -81,11 +79,6 @@ const ProgressEdit = () => {
         }
       });
     }
-  };
-
-  const handleDelete = (id) => {
-    console.log(id);
-    dispatch(removeImage(id));
   };
 
   const handleDeleteImage = async (id) => {

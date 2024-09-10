@@ -10,6 +10,7 @@ import {
   InputText,
   ButtonCircle,
   CardAlert,
+  Responsive,
 } from "upkit";
 import FaFilter from "@meronex/icons/fa/FaFilter";
 import FaEdit from "@meronex/icons/fa/FaEdit";
@@ -27,8 +28,12 @@ const ManagementProgress = () => {
   const { params } = useRouteMatch();
   let [status, setStatus] = React.useState("process");
   let progress = useSelector((state) => state.progress);
+  let progressByProjectId = progress?.data?.data?.filter(
+    (item) => item.projectId === parseInt(params.projectId)
+  );
   let [delstatus, setDelstatus] = React.useState(0);
   const history = useHistory();
+  console.log("progress by id:", progressByProjectId);
 
   React.useEffect(() => {
     setStatus("process");
@@ -50,14 +55,22 @@ const ManagementProgress = () => {
 
   const handleClick = () => {
     const username = params.username;
+    const projectId = params.projectId;
     const projectName = params.projectName;
-    history.push(`/progress/tambah/${username}/${projectName}`);
+    history.push(`/progress/tambah/${username}/${projectId}/${projectName}`);
   };
 
   const handleEdit = (progressId) => {
     const username = params.username;
     const projectName = params.projectName;
     history.push(`/progress/edit/${username}/${projectName}/${progressId}`);
+  };
+
+  const handlePreview = () => {
+    const username = params.username;
+    const projectId = params.projectId;
+    const projectName = params.projectName;
+    history.push(`/progress/preview/${username}/${projectName}/${projectId}}`);
   };
 
   const columns = [
@@ -126,7 +139,20 @@ const ManagementProgress = () => {
         <TopBar />
         <Text as="h3">{`Data Progress ${params.projectName}`}</Text>
         <br />
-        <Button onClick={handleClick}>Tambah baru</Button>
+        <Responsive desktop={2} justify="between" items="center">
+          <Button onClick={handleClick}>Tambah baru</Button>
+          {progressByProjectId?.length > 0 && (
+            <div className="mr-5 text-right">
+              <div
+                className="inline-block text-red-600 font-bold"
+                onClick={handlePreview}
+              >
+                Preview
+              </div>
+            </div>
+          )}
+        </Responsive>
+
         <ToastContainer
           position="bottom-center"
           autoClose={5000}
@@ -151,14 +177,14 @@ const ManagementProgress = () => {
             }}
           />
         </div>
-        {progress.data?.data?.length ? (
+        {progressByProjectId?.length ? (
           <Table
-            items={progress.data.data}
+            items={progressByProjectId}
             columns={columns}
-            totalItems={progress.data.paging.total_item + 15}
-            page={progress.data.currentPage}
-            isLoading={progress.status === "process"}
-            perPage={progress.data.perpage}
+            // totalItems={progress.data.paging.total_item + 15}
+            // page={progress.data.currentPage}
+            // isLoading={progress.status === "process"}
+            // perPage={progress.data.perpage}
             // onPageChange={(page) => dispatch(setPage(page))}
             primaryKey={"id"}
           />

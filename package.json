@@ -21,9 +21,12 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.0",
     "react-spinners": "^0.9.0",
+    "react-step-progress": "^1.0.3",
     "react-toastify": "^6.2.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
+    "survey-core": "^1.11.14",
+    "survey-react-ui": "^1.11.14",
     "tailwindcss": "^1.8.5",
     "upkit": "^0.17.10",
     "web-vitals": "^2.1.4"

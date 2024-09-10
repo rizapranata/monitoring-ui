@@ -1,9 +1,8 @@
 import React from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BounceLoader from "react-spinners/BounceLoader";
 import { LayoutOne, Text, Table, ButtonCircle, Badge, CardAlert } from "upkit";
-import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
 import FaEdit from "@meronex/icons/fa/FaEdit";
 import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
@@ -17,9 +16,11 @@ const ProjectClient = () => {
   const [status, setStatus] = React.useState("process");
   const projects = useSelector((state) => state.projects);
   const { role } = useParams();
-  const { data, limit, page, count, setSearch, setPage, setDelstatus } =
+  const { data, setPage } =
     userManagementData();
   const dataClient = data.filter((item) => item.role === "client");
+
+  console.log(projects.data);
 
   const checkTotalProject = (client) => {
     const total = projects.data.filter(

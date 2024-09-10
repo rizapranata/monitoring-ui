@@ -21,12 +21,10 @@ import { setPage } from "../../features/Products/actions";
 import { deleteProject } from "../../api/project";
 import { fetchProject, setKeyword } from "../../features/Projects/actions";
 import { useRouteMatch } from "react-router-dom";
-import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
 
 const ManagementProject = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
   const { params } = useRouteMatch();
   const [status, setStatus] = React.useState("process");
   const [delstatus, setDelstatus] = React.useState(0);
@@ -53,12 +51,6 @@ const ManagementProject = () => {
       progress: undefined,
     });
 
-  const handleClick = (projectName) => {
-    const username = params.username;
-
-    history.push(`/manajement-progress/${username}/${projectName}`);
-  };
-
   const columns = [
     { Header: "Nama Project", accessor: "name" },
     { Header: "Deskripsi", accessor: "desc" },
@@ -71,7 +63,9 @@ const ManagementProject = () => {
             <Link to={`/project/edit/${params?.username}/${items.id}`}>
               <ButtonCircle icon={<FaEdit />} />
             </Link>
-            <ButtonCircle icon={<BiCommentDetail />} onClick={() => handleClick(items.name)} />
+            <Link to={`/manajement-progress/${params?.username}/${items.id}/${items.name}`}>
+              <ButtonCircle icon={<BiCommentDetail />} />
+            </Link>
             <ButtonCircle
               onClick={() => {
                 if (window.confirm("Delete this product ?")) {
