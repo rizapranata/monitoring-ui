@@ -48,16 +48,13 @@ export async function getProjects(params) {
     });
 }
 
-export async function getProjectsDetails(projectId, params) {
+export async function getProjectsDetails(projectId) {
   let { token } = localStorage.getItem("auth")
     ? JSON.parse(localStorage.getItem("auth"))
     : {};
 
-  console.log("params:", params);
-
   return await axios
     .get(`${config.api_host}/api/project/${projectId}`, {
-      params,
       headers: {
         authorization: `${token}`,
       },

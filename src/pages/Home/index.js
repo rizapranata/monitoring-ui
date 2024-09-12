@@ -30,16 +30,16 @@ const menus = [
     // url: "/manajement-project",
     guard: "admin",
   },
-  {
-    label: "Progress",
-    icon: (
-      <IconWrapper>
-        <MdcProgressWrench />
-      </IconWrapper>
-    ),
-    url: "/manajement-progress",
-    guard: "admin",
-  },
+  // {
+  //   label: "Progress",
+  //   icon: (
+  //     <IconWrapper>
+  //       <MdcProgressWrench />
+  //     </IconWrapper>
+  //   ),
+  //   url: "/manajement-progress",
+  //   guard: "admin",
+  // },
   {
     label: "Menejemen Admin",
     icon: (

@@ -84,6 +84,7 @@ const ProjectAdd = () => {
               placeholder="Nama Project"
               fitContainer
               name="name"
+              value={getValues().name}
               ref={register(rules.name)}
             />
           </FormControl>

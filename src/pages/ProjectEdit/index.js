@@ -21,8 +21,6 @@ const ProjectEdit = () => {
   let history = useHistory();
   const [status, setStatus] = React.useState("process");
   const { params } = useRouteMatch();
-  // const { data } = userManagementData();
-  // const dataClient = data.filter((item) => item.role === "client");
 
   let { handleSubmit, register, errors, setValue, watch, getValues } =
     useForm();
@@ -42,8 +40,6 @@ const ProjectEdit = () => {
     register({ name: "desc" }, rules.desc);
   }, [params?.projectId, register, setValue]);
 
-  // const updateValue = (field, value) =>
-  //   setValue(field, value, { shouldValidate: true, shouldDirty: true });
 
   const onSubmit = async (formHook) => {
     const payload = {
@@ -106,24 +102,6 @@ const ProjectEdit = () => {
               ref={register(rules.desc)}
             />
           </FormControl>
-
-          {/* <FormControl
-            label="Pilih Client"
-            errorMessage={errors.usernameClient?.message}
-            color="black"
-          >
-            <Select
-              options={dataClient.map((client) => ({
-                label: client.name,
-                value: client.username,
-              }))}
-              value={getValues().usernameClient}
-              onChange={(option) => updateValue("usernameClient", option)}
-              isLoading={status}
-              sDisabled={status || !dataClient.length}
-              name="usernameClient"
-            />
-          </FormControl> */}
           <br />
 
           <Button fitContainer>Simpan</Button>

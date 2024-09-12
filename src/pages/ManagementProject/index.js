@@ -29,7 +29,7 @@ const ManagementProject = () => {
   const [status, setStatus] = React.useState("process");
   const [delstatus, setDelstatus] = React.useState(0);
   const projects = useSelector((state) => state.projects);
-  const spesificProject = projects.data.filter(
+  const spesificProject = projects?.data.length > 0 && projects?.data.filter(
     (data) => data.usernameClient === params.username
   );
 

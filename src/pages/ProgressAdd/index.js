@@ -80,7 +80,7 @@ const ProgressAdd = () => {
 
     payload.append("desc", formHook.desc);
     payload.append("title", formHook.title);
-    payload.append("projectId", params.projectId);
+    payload.append("projectId", parseInt(params.projectId));
     payload.append("usernameClient", params.username);
 
     const { data } = await createProgress(payload);

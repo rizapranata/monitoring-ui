@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -10,16 +10,22 @@ import { fetchProgress } from "../../features/Progress/actions";
 import SurveyComponent from "../../components/SurveyComponent";
 import StepProgressBar from "react-step-progress";
 import "react-step-progress/dist/index.css";
+import { config } from "../../config";
+import "../../App.css";
 
 const PreviewProgress = () => {
   let dispatch = useDispatch();
   const { params } = useRouteMatch();
   let [status, setStatus] = React.useState("process");
   let [delstatus, setDelstatus] = React.useState(0);
+  const [fullScreenImage, setFullScreenImage] = React.useState(null);
+  const scrollRef = useRef(null);
   let progress = useSelector((state) => state.progress);
-  let progressByProjectId = progress?.data?.data?.filter(
-    (item) => item.projectId === parseInt(params.projectId)
-  );
+  let progressByProjectId =
+    progress?.data?.data?.length > 0 &&
+    progress?.data?.data?.filter(
+      (item) => item.projectId === parseInt(params.projectId)
+    );
 
   console.log("progress preview by id:", progressByProjectId);
 
@@ -31,76 +37,80 @@ const PreviewProgress = () => {
     console.log();
   }, [dispatch, delstatus, progress.currentPage, progress.keyword]);
 
-  // const dataSurvey = (titlePreview) => {
-  //   let data = progressByProjectId?.map((item) => {
-  //     return {
-  //       navigationTitle: item.title,
-  //       elements: {
-  //         type: "text",
-  //         description: item.desc,
-  //         elements: {
-  //           type: "image",
-  //           imageLink: item.images,
-  //         },
-  //       },
-  //     };
-  //   });
 
-  //   return {
-  //     showProgressBar: "belowHeader",
-  //     progressBarType: "pages",
-  //     progressBarShowPageNumbers: true,
-  //     progressBarShowPageTitles: true,
-  //     title: titlePreview,
-  //     pages: data,
-  //     showQuestionNumbers: false,
-  //     widthMode: "static",
-  //     width: 900,
-  //   };
-  // };
-
-  // console.log(dataSurvey());
-
-  const step1Content = <h1>Step 1 Content</h1>;
-  const step2Content = <h1>Step 2 Content</h1>;
-  const step3Content = <h1>Step 3 Content</h1>;
-
-  function onFormSubmit() {
-    // handle the submit logic here
-    // This function will be executed at the last step
-    // when the submit button (next button in the previous steps) is pressed
-  }
-
-  function step2Validator() {
-    // return a boolean
-  }
-
-  function step3Validator() {
-    // return a boolean
-  }
-
-  const contentData = () => {
-    progressByProjectId.map((item) => {
-      return {
-        label: item.title,
-        content: `
-          <div class="project-card">
-            <h1>${item.title}</h1>
-            <p>${item.desc}</p>
-            <button onclick="alert('Project clicked')">View Project</button>
-          </div>
-        `,
-      };
-    });
+  const scrollLeft = () => {
+    scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
   };
 
-  console.log(contentData);
+  const scrollRight = () => {
+    scrollRef.current.scrollBy({ left: 200, behavior: "smooth" });
+  };
+
+  // Fungsi untuk menampilkan gambar dalam mode fullscreen
+  const openFullScreen = (imageUrl) => {
+    console.log("onClick full screen:", imageUrl);
+    setFullScreenImage(imageUrl);
+  };
+
+  // Fungsi untuk menutup fullscreen
+  const closeFullScreen = () => {
+    setFullScreenImage(null);
+  };
+
+  function onFormSubmit() {}
+  const stepValidator = () => true;
+  const StepContent = ({ data }) => (
+    <div>
+      <div className="desc-wrapper">
+        <p>{data.desc}</p>
+      </div>
+      <div className="scroll-wrapper">
+        <button className="scroll-button left" onClick={scrollLeft}>
+          {"<"}
+        </button>
+        <div className="scroll-container" ref={scrollRef}>
+          {data.images.length > 0 &&
+            data.images.map((image) => (
+              <img
+                key={image.id}
+                src={`${config.api_host}/public/upload/${image.imageUrl}`}
+                alt={`Progress ${image.progressId}`}
+                style={{ width: "800px" }}
+                className="scroll-image"
+                onClick={() => openFullScreen(image.imageUrl)}
+              />
+            ))}
+        </div>
+        <button className="scroll-button right" onClick={scrollRight}>
+          {">"}
+        </button>
+
+        {fullScreenImage && (
+          <div className="fullscreen-overlay" onClick={closeFullScreen}>
+            <img
+              src={`${config.api_host}/public/upload/${fullScreenImage}`}
+              alt="Fullscreen"
+              className="fullscreen-image"
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  let steps = progressByProjectId.map((project, index) => ({
+    label: project.title,
+    content: <StepContent data={project} />,
+    validator: stepValidator,
+  }));
+
+  console.log("seteps data: ", steps);
 
   return (
     <LayoutOne size="large">
       <div>
         <TopBar />
-        <Text as={"h3"}>{`Preview progress ${params.projectName}`}</Text>
+        <Text as={"h5"}>{`Preview progress ${params.projectName}`}</Text>
         <br />
         <ToastContainer
           position="bottom-center"
@@ -113,13 +123,14 @@ const PreviewProgress = () => {
           draggable
           pauseOnHover
         />
-        {/* {SurveyComponent(dataSurvey(`Preview progress ${params.projectName}`))} */}
-
-        {/* <StepProgressBar
+        <StepProgressBar
           startingStep={0}
           onSubmit={onFormSubmit}
-          steps={contentData}
-        /> */}
+          steps={steps}
+          labelClass="step-class"
+          secondaryBtnClass="sec-btn-class"
+          primaryBtnClass="prim-btn-class"
+        />
       </div>
     </LayoutOne>
   );

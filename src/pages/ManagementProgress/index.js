@@ -143,12 +143,13 @@ const ManagementProgress = () => {
           <Button onClick={handleClick}>Tambah baru</Button>
           {progressByProjectId?.length > 0 && (
             <div className="mr-5 text-right">
-              <div
+              <Button
                 className="inline-block text-red-600 font-bold"
                 onClick={handlePreview}
+                color={"orange"}
               >
                 Preview
-              </div>
+              </Button>
             </div>
           )}
         </Responsive>

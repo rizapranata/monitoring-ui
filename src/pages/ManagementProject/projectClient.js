@@ -20,10 +20,8 @@ const ProjectClient = () => {
     userManagementData();
   const dataClient = data.filter((item) => item.role === "client");
 
-  console.log(projects.data);
-
   const checkTotalProject = (client) => {
-    const total = projects.data.filter(
+    const total = projects?.data.length > 0 && projects?.data?.filter(
       (data) => data.usernameClient === client
     );
 
