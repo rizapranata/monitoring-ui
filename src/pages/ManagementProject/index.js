@@ -22,16 +22,22 @@ import { deleteProject } from "../../api/project";
 import { fetchProject, setKeyword } from "../../features/Projects/actions";
 import { useRouteMatch } from "react-router-dom";
 import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
+import { getPayment, updatePayment } from "../../api/payment";
+import ToastComponent from "../../components/ToastComponent";
 
 const ManagementProject = () => {
   const dispatch = useDispatch();
   const { params } = useRouteMatch();
   const [status, setStatus] = React.useState("process");
   const [delstatus, setDelstatus] = React.useState(0);
+  const [enabled, setEnabled] = React.useState(false);
+  const [payments, setPayments] = React.useState([]);
+  const [settled, setSettled] = React.useState([]);
+  const [updatePage, setUpdatePage] = React.useState(0);
   const projects = useSelector((state) => state.projects);
-  const spesificProject = projects?.data.length > 0 && projects?.data.filter(
-    (data) => data.usernameClient === params.username
-  );
+  const spesificProject =
+    projects?.data.length > 0 &&
+    projects?.data.filter((data) => data.usernameClient === params.username);
 
   React.useEffect(() => {
     setStatus("process");
@@ -39,6 +45,50 @@ const ManagementProject = () => {
     setStatus("success");
     setDelstatus(0);
   }, [dispatch, delstatus, projects.keyword]);
+
+  React.useEffect(() => {
+    setStatus("process");
+    getPayment()
+      .then(({ data }) => {
+        setPayments(data);
+        checkPaymentIsSettled(data);
+        setUpdatePage(0);
+      })
+      .finally(() => setStatus("success"));
+  }, [enabled, updatePage]);
+
+  const checkPaymentIsSettled = (data) => {
+    const settledData = data.data.filter((data) => data.isSettle === true);
+    setSettled(settledData);
+  };
+
+  const updatePaymentData = (projectId, payment) => {
+    try {
+      const findingByProjectId = payments?.data.find(
+        (data) => data.projectId === projectId
+      );
+      const payload = {
+        id: findingByProjectId.id,
+        isSettle: !payment,
+      };
+      
+      updatePayment(payload)
+      .then(({ data }) => {
+        console.log("edit result:", data);
+        if (data.status === "success") {
+            setEnabled(!payment);
+            setUpdatePage(1);
+          }
+        })
+        .finally(() => setStatus("idle"));
+    } catch (error) {
+      console.log("error:", error);
+    }
+  };
+
+  const handleUpdatePayment = (projectId, payment) => {
+    updatePaymentData(projectId, payment);
+  };
 
   const notifDelete = () =>
     toast.success("Delete Success !", {
@@ -58,12 +108,17 @@ const ManagementProject = () => {
     {
       Header: "Action",
       accessor: (items) => {
+        const checkPayment = settled.find(
+          (data) => data.projectId === items.id
+        );
         return (
           <div>
             <Link to={`/project/edit/${params?.username}/${items.id}`}>
               <ButtonCircle icon={<FaEdit />} />
             </Link>
-            <Link to={`/manajement-progress/${params?.username}/${items.id}/${items.name}`}>
+            <Link
+              to={`/manajement-progress/${params?.username}/${items.id}/${items.name}`}
+            >
               <ButtonCircle icon={<BiCommentDetail />} />
             </Link>
             <ButtonCircle
@@ -76,6 +131,26 @@ const ManagementProject = () => {
               }}
               icon={<FaTrash />}
             />
+            <div className="mt-5 items-center">
+              <button
+                type="button"
+                className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors duration-300 ${
+                  checkPayment?.isSettle ? "bg-green-400" : "bg-gray-300"
+                }`}
+                onClick={() =>
+                  handleUpdatePayment(items.id, checkPayment?.isSettle)
+                }
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                    checkPayment?.isSettle ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+              <span className="ml-3 text-gray-500">
+                {checkPayment?.isSettle ? "Sudah Lunas" : "Belum Lunas"}
+              </span>
+            </div>
           </div>
         );
       },
@@ -101,7 +176,7 @@ const ManagementProject = () => {
         <Text as="h3">{`Project ${params.username}`}</Text>
         <br />
         <Link to={`/project/tambah/${params.username}`}>
-          <Button>Tambah baru</Button>
+          <Button>Tambah Project</Button>
         </Link>
         <ToastContainer
           position="bottom-center"

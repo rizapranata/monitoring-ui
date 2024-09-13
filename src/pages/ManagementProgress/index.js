@@ -140,7 +140,7 @@ const ManagementProgress = () => {
         <Text as="h3">{`Data Progress ${params.projectName}`}</Text>
         <br />
         <Responsive desktop={2} justify="between" items="center">
-          <Button onClick={handleClick}>Tambah baru</Button>
+          <Button onClick={handleClick}>Tambah Progress</Button>
           {progressByProjectId?.length > 0 && (
             <div className="mr-5 text-right">
               <Button
