@@ -19,7 +19,6 @@ import {
   addProgressImage,
   updateProgress,
 } from "../../api/progress";
-import { useSelector } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
 import TiDeleteOutline from "@meronex/icons/ti/TiDeleteOutline";
 import { BounceLoader } from "react-spinners";
@@ -28,7 +27,6 @@ import ToastComponent from "../../components/ToastComponent";
 const ProgressEdit = () => {
   let history = useHistory();
   const { params } = useRouteMatch();
-  const progress = useSelector((store) => store.progress);
   const [status, setStatus] = React.useState("process");
   const [images, setImages] = React.useState([]);
   const [delstatus, setDelstatus] = React.useState(0);

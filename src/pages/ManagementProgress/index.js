@@ -1,6 +1,7 @@
 import React from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "react-confirm-alert/src/react-confirm-alert.css";
 import BounceLoader from "react-spinners/BounceLoader";
 import {
   LayoutOne,
@@ -22,6 +23,8 @@ import { config } from "../../config";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import { fetchProgress, setKeyword } from "../../features/Progress/actions";
 import { deleteProgress } from "../../api/progress";
+import { confirmAlert } from "react-confirm-alert";
+import ToastComponent from "../../components/ToastComponent";
 
 const ManagementProgress = () => {
   let dispatch = useDispatch();
@@ -42,17 +45,6 @@ const ManagementProgress = () => {
     setDelstatus(0);
   }, [dispatch, delstatus, progress.currentPage, progress.keyword]);
 
-  const notifDelete = () =>
-    toast.success("Delete Success !", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
   const handleClick = () => {
     const username = params.username;
     const projectId = params.projectId;
@@ -70,7 +62,31 @@ const ManagementProgress = () => {
     const username = params.username;
     const projectId = params.projectId;
     const projectName = params.projectName;
-    history.push(`/progress/preview/${username}/${projectName}/${projectId}}`);
+    history.push(`/progress/preview/${username}/${projectName}/${projectId}`);
+  };
+
+  const handleDelete = (progressId, title) => {
+    confirmAlert({
+      title: "KONFIRMASI HAPUS..!",
+      message: `Apakah progress "${title}" ingin dihapus?`,
+      closeOnEscape: true,
+      closeOnClickOutside: false,
+      keyCodeForClose: [8, 32],
+      buttons: [
+        {
+          label: "Ya",
+          onClick: () => {
+            ToastComponent("success", "Delete progress berhasil!")
+            deleteProgress(progressId);
+            setDelstatus(1);
+          },
+        },
+        {
+          label: "Tidak",
+          onClick: () => {},
+        },
+      ],
+    });
   };
 
   const columns = [
@@ -107,13 +123,7 @@ const ManagementProgress = () => {
             />
             <ButtonCircle
               icon={<FaTrash />}
-              onClick={() => {
-                if (window.confirm("Delete this Progress ?")) {
-                  deleteProgress(items.id);
-                  notifDelete();
-                  setDelstatus(1);
-                }
-              }}
+              onClick={() => handleDelete(items.id, items.title)}
             />
           </div>
         );

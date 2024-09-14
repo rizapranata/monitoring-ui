@@ -123,6 +123,7 @@ const ProgressAdd = () => {
               placeholder="Judul Progress"
               fitContainer
               name="title"
+              value={getValues().title}
               ref={register(rules.title)}
             />
           </FormControl>

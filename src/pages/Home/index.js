@@ -30,6 +30,16 @@ const menus = [
     // url: "/manajement-project",
     guard: "admin",
   },
+  {
+    label: "Projects",
+    icon: (
+      <IconWrapper>
+        <FaProjectDiagram />
+      </IconWrapper>
+    ),
+    url: "/project",
+    guard: "client",
+  },
   // {
   //   label: "Progress",
   //   icon: (

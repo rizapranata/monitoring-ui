@@ -23,10 +23,12 @@ import { deleteProject } from "../../api/project";
 import { fetchProject, setKeyword } from "../../features/Projects/actions";
 import { useRouteMatch } from "react-router-dom";
 import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
+import ZoViewShow from "@meronex/icons/zo/ZoViewShow";
 import { getPayment, updatePayment } from "../../api/payment";
 import { confirmAlert } from "react-confirm-alert";
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
-const ManagementProject = () => {
+const Project = () => {
   const dispatch = useDispatch();
   const { params } = useRouteMatch();
   const [status, setStatus] = React.useState("process");
@@ -35,10 +37,13 @@ const ManagementProject = () => {
   const [payments, setPayments] = React.useState([]);
   const [settled, setSettled] = React.useState([]);
   const [updatePage, setUpdatePage] = React.useState(0);
+  const { user } = useSelector((state) => state.auth);
+  const history = useHistory();
+
   const projects = useSelector((state) => state.projects);
   const spesificProject =
     projects?.data.length > 0 &&
-    projects?.data.filter((data) => data.usernameClient === params.username);
+    projects?.data.filter((data) => data.usernameClient === user.username);
 
   React.useEffect(() => {
     setStatus("process");
@@ -61,30 +66,6 @@ const ManagementProject = () => {
   const checkPaymentIsSettled = (data) => {
     const settledData = data.data.filter((data) => data.isSettle === true);
     setSettled(settledData);
-  };
-
-  const updatePaymentData = (projectId, payment) => {
-    try {
-      const findingByProjectId = payments?.data.find(
-        (data) => data.projectId === projectId
-      );
-      const payload = {
-        id: findingByProjectId.id,
-        isSettle: !payment,
-      };
-
-      updatePayment(payload)
-        .then(({ data }) => {
-          console.log("edit result:", data);
-          if (data.status === "success") {
-            setEnabled(!payment);
-            setUpdatePage(1);
-          }
-        })
-        .finally(() => setStatus("idle"));
-    } catch (error) {
-      console.log("error:", error);
-    }
   };
 
   const handleDelete = (projectId, title) => {
@@ -111,26 +92,9 @@ const ManagementProject = () => {
     });
   };
 
-  const handleUpdatePayment = (projectId, payment, projName) => {
-    confirmAlert({
-      title: "KONFIRMASI PAYMENT..!",
-      message: !payment
-        ? `Apakah project "${projName}" sudah lunas?`
-        : `Apakah project "${projName}" belum lunas?`,
-      closeOnEscape: true,
-      closeOnClickOutside: false,
-      keyCodeForClose: [8, 32],
-      buttons: [
-        {
-          label: "Ya",
-          onClick: () => updatePaymentData(projectId, payment),
-        },
-        {
-          label: "Tidak",
-          onClick: () => {},
-        },
-      ],
-    });
+  const handlePreview = (customer, projectId, projectName) => {
+    console.log(`/preview/${customer}/${projectName}/${projectId}`);
+    history.push(`/preview/${customer}/${projectName}/${projectId}`);
   };
 
   const notifDelete = () =>
@@ -154,44 +118,16 @@ const ManagementProject = () => {
         const checkPayment = settled.find(
           (data) => data.projectId === items.id
         );
+
         return (
           <div>
-            <Link to={`/project/edit/${params?.username}/${items.id}`}>
-              <ButtonCircle icon={<FaEdit />} />
-            </Link>
-            <Link
-              to={`/manajement-progress/${params?.username}/${items.id}/${items.name}`}
-            >
-              <ButtonCircle icon={<BiCommentDetail />} />
-            </Link>
             <ButtonCircle
-              onClick={() => handleDelete(items.id, items.name)}
-              icon={<FaTrash />}
+              color={checkPayment?.isSettle ? "green" : "red"}
+              onClick={() =>
+                handlePreview(items.usernameClient, items.id, items.name)
+              }
+              icon={<ZoViewShow />}
             />
-            <div className="mt-5 items-center">
-              <button
-                type="button"
-                className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors duration-300 ${
-                  checkPayment?.isSettle ? "bg-green-400" : "bg-gray-300"
-                }`}
-                onClick={() =>
-                  handleUpdatePayment(
-                    items.id,
-                    checkPayment?.isSettle,
-                    items.name
-                  )
-                }
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
-                    checkPayment?.isSettle ? "translate-x-6" : "translate-x-1"
-                  }`}
-                />
-              </button>
-              <span className="ml-3 text-gray-500">
-                {checkPayment?.isSettle ? "Sudah Lunas" : "Belum Lunas"}
-              </span>
-            </div>
           </div>
         );
       },
@@ -214,11 +150,8 @@ const ManagementProject = () => {
     <LayoutOne size="large">
       <div>
         <TopBar />
-        <Text as="h3">{`Project ${params.username}`}</Text>
+        <Text as="h3">{`Project ${user.name}`}</Text>
         <br />
-        <Link to={`/project/tambah/${params.username}`}>
-          <Button>Tambah Project</Button>
-        </Link>
         <ToastContainer
           position="bottom-center"
           autoClose={5000}
@@ -246,10 +179,6 @@ const ManagementProject = () => {
           <Table
             items={spesificProject}
             columns={columns}
-            // totalItems={projects.totalItems + 15}
-            // page={projects.currentPage}
-            // isLoading={projects.status === "process"}
-            // perPage={projects.perpage}
             onPageChange={(page) => dispatch(setPage(page))}
             primaryKey={"_id"}
           />
@@ -266,4 +195,4 @@ const ManagementProject = () => {
   );
 };
 
-export default ManagementProject;
+export default Project;

@@ -5,7 +5,6 @@ import {
   FormControl,
   Button,
   Text,
-  Select,
   Textarea,
 } from "upkit";
 import TopBar from "../../components/TopBar";
@@ -36,7 +35,7 @@ const ProjectAdd = () => {
   }, [register]);
 
   const notifSuccessCreate = () =>
-    toast.success("Create Project Success!", {
+    toast.success("Project baru berhasi dibuat!", {
       position: "bottom-center",
       autoClose: 5000,
       hideProgressBar: true,

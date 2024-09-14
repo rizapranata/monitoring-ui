@@ -14,6 +14,7 @@
     "jspdf": "^2.5.1",
     "postcss": "^7.0.32",
     "react": "^16.13.1",
+    "react-confirm-alert": "^2.5.0",
     "react-datepicker": "^4.21.0",
     "react-dom": "^16.13.1",
     "react-hook-form": "^6.7.2",

@@ -11,18 +11,24 @@ import {
   Button,
   CardAlert,
 } from "upkit";
-import AiFillPrinter from "@meronex/icons/ai/AiFillPrinter";
 import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
 import FaEdit from "@meronex/icons/fa/FaEdit";
 import FaTrash from "@meronex/icons/fa/FaTrash";
 import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userManagementData } from "../../hooks/userManagement";
 import { deleteUser } from "../../api/user";
 import { useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
 const ManagementUser = () => {
+  const { user } = useSelector((state) => state.auth);
+  const history = useHistory();
+  if (user === null || user === undefined) {
+    history.push("/login");
+  }
+  
   let dispatch = useDispatch();
   let [error, setError] = React.useState(false);
   let { role } = useParams();
@@ -111,6 +117,10 @@ const ManagementUser = () => {
       },
     },
   ];
+
+  console.log("user login:", user);
+
+ 
 
   if (status === "process") {
     return (
