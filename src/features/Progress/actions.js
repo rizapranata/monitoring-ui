@@ -19,6 +19,8 @@ export const fetchProgress = () => {
   return async (dispatch, getState) => {
     dispatch(startFetchingProgress());
 
+    console.log("fetch progress data");
+
     let keyword = getState().progress.keyword || "";
     let params = {};
 

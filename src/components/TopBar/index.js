@@ -10,7 +10,7 @@ export default function TopBar() {
 
   return (
     <Responsive desktop={2} justify="between" items="center">
-      <div>
+      <div className="mt-5">
         <StoreLogo />
       </div>
       {/* <div>

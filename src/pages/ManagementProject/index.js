@@ -113,7 +113,7 @@ const ManagementProject = () => {
 
   const handleUpdatePayment = (projectId, payment, projName) => {
     confirmAlert({
-      title: "KONFIRMASI PAYMENT..!",
+      title: "KONFIRMASI PEMBAYARAN..!",
       message: !payment
         ? `Apakah project "${projName}" sudah lunas?`
         : `Apakah project "${projName}" belum lunas?`,

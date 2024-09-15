@@ -24,6 +24,7 @@ import { fetchProject, setKeyword } from "../../features/Projects/actions";
 import { useRouteMatch } from "react-router-dom";
 import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
 import ZoViewShow from "@meronex/icons/zo/ZoViewShow";
+import ZoViewHide from "@meronex/icons/zo/ZoViewHide";
 import { getPayment, updatePayment } from "../../api/payment";
 import { confirmAlert } from "react-confirm-alert";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
@@ -68,33 +69,23 @@ const Project = () => {
     setSettled(settledData);
   };
 
-  const handleDelete = (projectId, title) => {
-    confirmAlert({
-      title: "KONFIRMASI HAPUS..!",
-      message: `Apakah project "${title}" ingin dihapus?`,
-      closeOnEscape: true,
-      closeOnClickOutside: false,
-      keyCodeForClose: [8, 32],
-      buttons: [
-        {
-          label: "Ya",
-          onClick: () => {
-            deleteProject(parseInt(projectId));
-            setDelstatus(1);
-            notifDelete();
+  const handlePreview = (customer, projectId, projectName, paymentStatus) => {
+    if (!paymentStatus) {
+      confirmAlert({
+        title: "Oops..!",
+        message: `Anda belum melakukan pembayaran untuk project "${projectName}". Silahkan melakukan pembayaran dan kembali melihat progress project ini lagi. Terima kasih`,
+        closeOnEscape: true,
+        closeOnClickOutside: false,
+        buttons: [
+          {
+            label: "Oke",
+            onClick: () => {},
           },
-        },
-        {
-          label: "Tidak",
-          onClick: () => {},
-        },
-      ],
-    });
-  };
-
-  const handlePreview = (customer, projectId, projectName) => {
-    console.log(`/preview/${customer}/${projectName}/${projectId}`);
-    history.push(`/preview/${customer}/${projectName}/${projectId}`);
+        ],
+      });
+    } else {
+      history.push(`/preview/${customer}/${projectName}/${projectId}`);
+    }
   };
 
   const notifDelete = () =>
@@ -122,11 +113,15 @@ const Project = () => {
         return (
           <div>
             <ButtonCircle
-              color={checkPayment?.isSettle ? "green" : "red"}
               onClick={() =>
-                handlePreview(items.usernameClient, items.id, items.name)
+                handlePreview(
+                  items.usernameClient,
+                  items.id,
+                  items.name,
+                  checkPayment?.isSettle
+                )
               }
-              icon={<ZoViewShow />}
+              icon={checkPayment?.isSettle ? <ZoViewShow /> : <ZoViewHide />}
             />
           </div>
         );

@@ -118,10 +118,6 @@ const ManagementUser = () => {
     },
   ];
 
-  console.log("user login:", user);
-
- 
-
   if (status === "process") {
     return (
       <LayoutOne>

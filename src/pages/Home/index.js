@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { Responsive, LayoutOne, Card, Text, CardError } from "upkit";
 import { useSelector } from "react-redux";
 import FaUserCog from "@meronex/icons/fa/FaUserCog";
-import MdcProgressWrench from "@meronex/icons/mdc/MdcProgressWrench";
 import FaProjectDiagram from "@meronex/icons/fa/FaProjectDiagram";
 import FiUsers from "@meronex/icons/fi/FiUsers";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
@@ -83,10 +82,15 @@ export default function Home() {
   return (
     <LayoutOne>
       <TopBar />
-      <div className="text-black-100 font-medium text-2x1">
+      {/* <div className="text-black-100 font-medium text-2x1">
         <Text as="h5">Menu Utama</Text>
       </div>
+      <br /> */}
       <br />
+      <div className="items-center justify-left mt-5">
+        <h1 className="text-3xl font-bold text-black-100">{`Selamat datang ${user.name}!`}</h1>
+        <h3 className="text-2x1 text-black-100 mb-5">{`Semoga hari anda sebagai ${user.role} selalu menyenangkan :)`}</h3>
+      </div>
 
       {user.status === false ? (
         <>

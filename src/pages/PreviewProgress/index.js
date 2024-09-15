@@ -4,36 +4,33 @@ import "react-toastify/dist/ReactToastify.css";
 import BounceLoader from "react-spinners/BounceLoader";
 import { LayoutOne, Text } from "upkit";
 import TopBar from "../../components/TopBar";
-import { useDispatch, useSelector } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
-import { fetchProgress } from "../../features/Progress/actions";
 import StepProgressBar from "react-step-progress";
 import "react-step-progress/dist/index.css";
 import { config } from "../../config";
 import "../../App.css";
+import { getProgress } from "../../api/progress";
 
 const PreviewProgress = () => {
-  let dispatch = useDispatch();
   const { params } = useRouteMatch();
   console.log("params:", params);
-  let [status, setStatus] = React.useState("process");
-  let [delstatus, setDelstatus] = React.useState(0);
+  const [status, setStatus] = React.useState("process");
+  const [progressData, setProgressData] = React.useState([]);
   const [fullScreenImage, setFullScreenImage] = React.useState(null);
   const scrollRef = useRef(null);
 
-  let progress = useSelector((state) => state.progress);
-  let progressByProjectId = progress?.data?.data?.filter(
+  let progressByProjectId = progressData?.filter(
     (item) => item.projectId === parseInt(params.projectId)
   );
 
-  console.log("progress preview by id:", progress);
-
   React.useEffect(() => {
     setStatus("process");
-    dispatch(fetchProgress());
-    setStatus("success");
-    setDelstatus(0);
-  }, [dispatch, delstatus, progress.keyword]);
+    getProgress()
+      .then(({ data }) => {
+        setProgressData(data.data.data);
+      })
+      .finally(() => setStatus("success"));
+  }, []);
 
   const scrollLeft = () => {
     scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
@@ -100,8 +97,6 @@ const PreviewProgress = () => {
     content: <StepContent data={project} />,
     validator: stepValidator,
   }));
-
-  console.log("seteps data: ", steps);
 
   if (status === "process") {
     return (
