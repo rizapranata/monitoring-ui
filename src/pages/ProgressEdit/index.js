@@ -158,7 +158,11 @@ const ProgressEdit = () => {
             />
           </FormControl>
 
-          <FormControl label="Deskripsi" errorMessage={""} color="black">
+          <FormControl
+            label="Deskripsi"
+            errorMessage={errors.desc?.message}
+            color="black"
+          >
             <Textarea
               placeholder="Deskripsi"
               fitContainer

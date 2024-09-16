@@ -83,17 +83,21 @@ const ProjectAdd = () => {
               placeholder="Nama Project"
               fitContainer
               name="name"
-              value={getValues().name}
+              defaultValue={getValues().name}
               ref={register(rules.name)}
             />
           </FormControl>
 
-          <FormControl label="Deskripsi" errorMessage={""} color="black">
+          <FormControl
+            label="Deskripsi"
+            errorMessage={errors.desc?.message}
+            color="black"
+          >
             <Textarea
               placeholder="Deskripsi"
               fitContainer
               name="desc"
-              value={getValues().desc}
+              defaultValue={getValues().desc}
               ref={register(rules.desc)}
             />
           </FormControl>

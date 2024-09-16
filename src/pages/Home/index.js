@@ -30,7 +30,7 @@ const menus = [
     guard: "admin",
   },
   {
-    label: "Projects",
+    label: "Projek Saya",
     icon: (
       <IconWrapper>
         <FaProjectDiagram />

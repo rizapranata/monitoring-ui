@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BounceLoader from "react-spinners/BounceLoader";
-import { LayoutOne, Text } from "upkit";
+import { CardAlert, LayoutOne, Text } from "upkit";
 import TopBar from "../../components/TopBar";
 import { useRouteMatch } from "react-router-dom";
 import StepProgressBar from "react-step-progress";
@@ -31,6 +31,15 @@ const PreviewProgress = () => {
       })
       .finally(() => setStatus("success"));
   }, []);
+
+  const emptyData = [
+    {
+      label: "Step 1",
+      subtitle: "10%",
+      name: "step 1",
+      content: `<h1>Step 1 Content</h1>`,
+    },
+  ];
 
   const scrollLeft = () => {
     scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
@@ -92,11 +101,14 @@ const PreviewProgress = () => {
     </div>
   );
 
-  let steps = progressByProjectId.map((project, index) => ({
-    label: project.title,
-    content: <StepContent data={project} />,
-    validator: stepValidator,
-  }));
+  let steps =
+    progressByProjectId.length > 0
+      ? progressByProjectId.map((project, index) => ({
+          label: project.title,
+          content: <StepContent data={project} />,
+          validator: stepValidator,
+        }))
+      : emptyData;
 
   if (status === "process") {
     return (
@@ -127,14 +139,23 @@ const PreviewProgress = () => {
           draggable
           pauseOnHover
         />
-        <StepProgressBar
-          startingStep={0}
-          onSubmit={onFormSubmit}
-          steps={steps}
-          labelClass="step-class"
-          secondaryBtnClass="sec-btn-class"
-          primaryBtnClass="prim-btn-class"
-        />
+        {progressByProjectId.length > 0 ? (
+          <StepProgressBar
+            startingStep={0}
+            onSubmit={onFormSubmit}
+            steps={steps}
+            labelClass="step-class"
+            secondaryBtnClass="sec-btn-class"
+            primaryBtnClass="prim-btn-class"
+          />
+        ) : (
+          <LayoutOne size="medium">
+            <CardAlert
+              title={`Data progress kosong!`}
+              message="Belum ada data progress."
+            />
+          </LayoutOne>
+        )}
       </div>
     </LayoutOne>
   );

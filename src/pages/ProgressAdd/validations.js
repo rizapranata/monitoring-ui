@@ -14,7 +14,15 @@ const rules = {
     required: { value: true, message: "Client tidak boleh kosong" },
   },
   desc: {
-    option: { value: true, message: "" },
+    required: { value: true, message: "Deskripsi tidak boleh kosong!" },
+    maxLength: {
+      value: 500,
+      message: "Panjang deskripsi maksimal 500 karakter",
+    },
+    minLength: {
+      value: 3,
+      message: "Panjang deskripsi minimal 3 karakter",
+    },
   },
   images: {
     required: { value: true, message: "image tidak boleh kosong." },

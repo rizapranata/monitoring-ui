@@ -40,7 +40,6 @@ const ProjectEdit = () => {
     register({ name: "desc" }, rules.desc);
   }, [params?.projectId, register, setValue]);
 
-
   const onSubmit = async (formHook) => {
     const payload = {
       id: parseInt(params?.projectId),
@@ -93,7 +92,11 @@ const ProjectEdit = () => {
             />
           </FormControl>
 
-          <FormControl label="Deskripsi" errorMessage={""} color="black">
+          <FormControl
+            label="Deskripsi"
+            errorMessage={errors.desc?.message}
+            color="black"
+          >
             <Textarea
               placeholder="Deskripsi"
               fitContainer

@@ -90,7 +90,7 @@ const ProgressAdd = () => {
       return;
     }
 
-    ToastComponent("success", "Progress success ditambahkan")
+    ToastComponent("success", "Progress success ditambahkan");
     dispatch(clearImage(""));
     history.goBack();
   };
@@ -123,17 +123,21 @@ const ProgressAdd = () => {
               placeholder="Judul Progress"
               fitContainer
               name="title"
-              value={getValues().title}
+              defaultValue={getValues().title}
               ref={register(rules.title)}
             />
           </FormControl>
 
-          <FormControl label="Deskripsi" errorMessage={""} color="black">
+          <FormControl
+            label="Deskripsi"
+            errorMessage={errors.desc?.message}
+            color="black"
+          >
             <Textarea
               placeholder="Deskripsi"
               fitContainer
               name="desc"
-              value={getValues().desc}
+              defaultValue={getValues().desc}
               ref={register(rules.desc)}
             />
           </FormControl>

@@ -36,7 +36,7 @@ const ManagementProgress = () => {
   );
   let [delstatus, setDelstatus] = React.useState(0);
   const history = useHistory();
-  console.log("progress by id:", progressByProjectId);
+  console.log("progress by id:", progress.data);
 
   React.useEffect(() => {
     setStatus("process");
@@ -64,6 +64,10 @@ const ManagementProgress = () => {
     const projectName = params.projectName;
     history.push(`/progress/preview/${username}/${projectName}/${projectId}`);
   };
+
+  const pages = (page) => {
+    console.log("onPage:",page);
+  }
 
   const handleDelete = (progressId, title) => {
     confirmAlert({
@@ -192,11 +196,12 @@ const ManagementProgress = () => {
           <Table
             items={progressByProjectId}
             columns={columns}
-            // totalItems={progress.data.paging.total_item + 15}
-            // page={progress.data.currentPage}
-            // isLoading={progress.status === "process"}
-            // perPage={progress.data.perpage}
+            totalItems={progress.data.paging.total_item + 10}
+            page={progress.data.paging.page}
+            isLoading={progress.status === "process"}
+            perPage={progress.data.perpage}
             // onPageChange={(page) => dispatch(setPage(page))}
+            onPageChange={(page) => pages(page)}
             primaryKey={"id"}
           />
         ) : (
