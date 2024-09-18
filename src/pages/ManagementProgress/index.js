@@ -21,7 +21,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
 import { config } from "../../config";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
-import { fetchProgress, setKeyword } from "../../features/Progress/actions";
+import {
+  fetchProgress,
+  setKeyword,
+  setPage,
+} from "../../features/Progress/actions";
 import { deleteProgress } from "../../api/progress";
 import { confirmAlert } from "react-confirm-alert";
 import ToastComponent from "../../components/ToastComponent";
@@ -36,7 +40,7 @@ const ManagementProgress = () => {
   );
   let [delstatus, setDelstatus] = React.useState(0);
   const history = useHistory();
-  console.log("progress by id:", progress.data);
+  console.log("progress by id:", progress);
 
   React.useEffect(() => {
     setStatus("process");
@@ -65,10 +69,6 @@ const ManagementProgress = () => {
     history.push(`/progress/preview/${username}/${projectName}/${projectId}`);
   };
 
-  const pages = (page) => {
-    console.log("onPage:",page);
-  }
-
   const handleDelete = (progressId, title) => {
     confirmAlert({
       title: "KONFIRMASI HAPUS..!",
@@ -80,7 +80,7 @@ const ManagementProgress = () => {
         {
           label: "Ya",
           onClick: () => {
-            ToastComponent("success", "Delete progress berhasil!")
+            ToastComponent("success", "Delete progress berhasil!");
             deleteProgress(progressId);
             setDelstatus(1);
           },
@@ -147,6 +147,11 @@ const ManagementProgress = () => {
     );
   }
 
+  const totalData =
+    progressByProjectId?.length >= 5
+      ? progressByProjectId?.length + 15
+      : progressByProjectId?.length + 5;
+
   return (
     <LayoutOne size="large">
       <div>
@@ -196,12 +201,10 @@ const ManagementProgress = () => {
           <Table
             items={progressByProjectId}
             columns={columns}
-            totalItems={progress.data.paging.total_item + 10}
+            totalItems={totalData}
             page={progress.data.paging.page}
             isLoading={progress.status === "process"}
-            perPage={progress.data.perpage}
-            // onPageChange={(page) => dispatch(setPage(page))}
-            onPageChange={(page) => pages(page)}
+            onPageChange={(page) => dispatch(setPage(page))}
             primaryKey={"id"}
           />
         ) : (

@@ -250,8 +250,8 @@ const ManagementProject = () => {
             // page={projects.currentPage}
             // isLoading={projects.status === "process"}
             // perPage={projects.perpage}
-            onPageChange={(page) => dispatch(setPage(page))}
-            primaryKey={"_id"}
+            // onPageChange={(page) => dispatch(setPage(page))}
+            // primaryKey={"_id"}
           />
         ) : (
           <LayoutOne size="medium">

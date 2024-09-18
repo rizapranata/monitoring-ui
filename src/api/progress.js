@@ -25,6 +25,31 @@ export async function getProgress(params) {
     });
 }
 
+export async function getAllProgress() {
+  let { token } = localStorage.getItem("auth")
+    ? JSON.parse(localStorage.getItem("auth"))
+    : {};
+
+  console.log("getAllProgress dipanggil");
+  const params = {};
+
+  return await axios
+    .get(`${config.api_host}/api/progresses`, {
+      params,
+      headers: {
+        authorization: `${token}`,
+      },
+    })
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      if (error.response) {
+        console.log("error response: ", error.response);
+      }
+    });
+}
+
 export async function getProgressDetail(progressId) {
   let { token } = localStorage.getItem("auth")
     ? JSON.parse(localStorage.getItem("auth"))

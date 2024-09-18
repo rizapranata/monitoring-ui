@@ -86,8 +86,10 @@
   display: flex;
   overflow-x: auto;
   white-space: nowrap;
-  padding: 10px 10px;
-  gap: 10px;
+  padding-left: 12%;
+  padding-right: 11%;
+  /* justify-content: center; */
+  gap: 20%;
   flex: 1; /* Agar container mengambil ruang sisa antara tombol */
 }
 

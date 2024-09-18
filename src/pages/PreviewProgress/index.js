@@ -9,7 +9,7 @@ import StepProgressBar from "react-step-progress";
 import "react-step-progress/dist/index.css";
 import { config } from "../../config";
 import "../../App.css";
-import { getProgress } from "../../api/progress";
+import { getAllProgress } from "../../api/progress";
 
 const PreviewProgress = () => {
   const { params } = useRouteMatch();
@@ -23,11 +23,12 @@ const PreviewProgress = () => {
     (item) => item.projectId === parseInt(params.projectId)
   );
 
+
   React.useEffect(() => {
     setStatus("process");
-    getProgress()
+    getAllProgress()
       .then(({ data }) => {
-        setProgressData(data.data.data);
+        setProgressData(data.data);
       })
       .finally(() => setStatus("success"));
   }, []);
@@ -42,11 +43,11 @@ const PreviewProgress = () => {
   ];
 
   const scrollLeft = () => {
-    scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
+    scrollRef.current.scrollBy({ left: -700, behavior: "smooth" });
   };
 
   const scrollRight = () => {
-    scrollRef.current.scrollBy({ left: 200, behavior: "smooth" });
+    scrollRef.current.scrollBy({ left: 700, behavior: "smooth" });
   };
 
   // Fungsi untuk menampilkan gambar dalam mode fullscreen
@@ -78,7 +79,7 @@ const PreviewProgress = () => {
                 key={image.id}
                 src={`${config.api_host}/public/upload/${image.imageUrl}`}
                 alt={`Progress ${image.progressId}`}
-                style={{ width: "800px" }}
+                style={{ width: "600px" }}
                 className="scroll-image"
                 onClick={() => openFullScreen(image.imageUrl)}
               />

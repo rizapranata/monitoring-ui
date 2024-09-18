@@ -9,6 +9,9 @@ import {
   SET_KEYWORD,
   EDIT_IMAGE,
   CLEAR_IMAGE,
+  SET_PAGE,
+  NEXT_PAGE,
+  PREV_PAGE,
 } from "./constants";
 
 const statuslist = {
@@ -22,6 +25,7 @@ const initialState = {
   data: [],
   keyword: "",
   imageList: [],
+  currentPage: 1,
   titleAndDesc: {},
   status: statuslist.idle,
 };
@@ -54,6 +58,18 @@ export default function reducer(state = initialState, action) {
         ...state,
         imageList: [...state.imageList, action.item],
       };
+
+    case SET_PAGE:
+      return {
+        ...state,
+        currentPage: action.currentPage,
+      };
+
+    case NEXT_PAGE:
+      return { ...state, currentPage: state.currentPage + 1 };
+
+    case PREV_PAGE:
+      return { ...state, currentPage: state.currentPage - 1 };
 
     case EDIT_IMAGE:
       return {

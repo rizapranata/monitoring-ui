@@ -10,6 +10,9 @@ import {
   SET_KEYWORD,
   EDIT_IMAGE,
   CLEAR_IMAGE,
+  NEXT_PAGE,
+  PREV_PAGE,
+  SET_PAGE,
 } from "./constants";
 import { getProgress } from "../../api/progress";
 
@@ -22,13 +25,21 @@ export const fetchProgress = () => {
     console.log("fetch progress data");
 
     let keyword = getState().progress.keyword || "";
+    let currentPage = getState().progress.currentPage || "";
     let params = {};
 
+    console.log("--------------------------");
+    console.log("req from action:", {keyword, currentPage});
+    console.log("--------------------------");
+
     if (keyword === "") {
-      params = {};
+      params = {
+        page: currentPage,
+      };
     } else {
       params = {
         title: keyword,
+        page: currentPage,
       };
     }
 
@@ -81,15 +92,15 @@ export function addImage(item) {
 export function editImage(item) {
   return {
     type: EDIT_IMAGE,
-    item
-  }
+    item,
+  };
 }
 
 export function clearImage(item) {
   return {
     type: CLEAR_IMAGE,
-    item
-  }
+    item,
+  };
 }
 
 export function removeImage(item) {
@@ -111,3 +122,22 @@ export function setItems(items) {
     items,
   };
 }
+
+export const setPage = (number = 1) => {
+  return {
+    type: SET_PAGE,
+    currentPage: number,
+  };
+};
+
+export const goToNextPage = () => {
+  return {
+    type: NEXT_PAGE,
+  };
+};
+
+export const goToPrevPage = () => {
+  return {
+    type: PREV_PAGE,
+  };
+};
