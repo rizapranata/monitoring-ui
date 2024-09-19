@@ -13,16 +13,14 @@ import {
   CardAlert,
 } from "upkit";
 import FaFilter from "@meronex/icons/fa/FaFilter";
-import FaEdit from "@meronex/icons/fa/FaEdit";
-import FaTrash from "@meronex/icons/fa/FaTrash";
-import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
 import { useDispatch, useSelector } from "react-redux";
-import { setPage } from "../../features/Products/actions";
-import { deleteProject } from "../../api/project";
-import { fetchProject, setKeyword } from "../../features/Projects/actions";
+import {
+  fetchProject,
+  setKeyword,
+  setPage,
+} from "../../features/Projects/actions";
 import { useRouteMatch } from "react-router-dom";
-import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
 import ZoViewShow from "@meronex/icons/zo/ZoViewShow";
 import ZoViewHide from "@meronex/icons/zo/ZoViewHide";
 import { getPayment, updatePayment } from "../../api/payment";
@@ -42,16 +40,15 @@ const Project = () => {
   const history = useHistory();
 
   const projects = useSelector((state) => state.projects);
-  const spesificProject =
-    projects?.data.length > 0 &&
-    projects?.data.filter((data) => data.usernameClient === user.username);
+
+  console.log("project:", projects);
 
   React.useEffect(() => {
     setStatus("process");
-    dispatch(fetchProject());
+    dispatch(fetchProject(user.username));
     setStatus("success");
     setDelstatus(0);
-  }, [dispatch, delstatus, projects.keyword]);
+  }, [dispatch, delstatus, projects.currentPage, projects.keyword]);
 
   React.useEffect(() => {
     setStatus("process");
@@ -141,6 +138,11 @@ const Project = () => {
     );
   }
 
+  const totalData =
+    projects?.data?.data?.length >= 2
+      ? projects?.data?.data?.length + 15
+      : projects?.data?.data?.length + 5;
+
   return (
     <LayoutOne size="large">
       <div>
@@ -161,7 +163,7 @@ const Project = () => {
         <div className="w-full text-center mb-10 mt-5">
           <InputText
             fullRound
-            value={spesificProject.keyword}
+            value={projects.keyword}
             placeholder="cari nama project..."
             fitContainer
             iconAfter={<ButtonCircle icon={<FaFilter />} />}
@@ -170,10 +172,13 @@ const Project = () => {
             }}
           />
         </div>
-        {spesificProject.length ? (
+        {projects?.data?.data?.length ? (
           <Table
-            items={spesificProject}
+            items={projects?.data?.data}
             columns={columns}
+            totalItems={totalData}
+            page={projects?.data?.paging.page}
+            isLoading={projects.status === "process"}
             onPageChange={(page) => dispatch(setPage(page))}
             primaryKey={"_id"}
           />

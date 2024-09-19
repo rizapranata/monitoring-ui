@@ -16,17 +16,8 @@ const ProjectClient = () => {
   const [status, setStatus] = React.useState("process");
   const projects = useSelector((state) => state.projects);
   const { role } = useParams();
-  const { data, setPage } =
-    userManagementData();
+  const { data, setPage } = userManagementData();
   const dataClient = data.filter((item) => item.role === "client");
-
-  const checkTotalProject = (client) => {
-    const total = projects?.data.length > 0 && projects?.data?.filter(
-      (data) => data.usernameClient === client
-    );
-
-    return total.length;
-  };
 
   React.useEffect(() => {
     setStatus("process");
@@ -39,10 +30,12 @@ const ProjectClient = () => {
     {
       Header: "Jumlah Project",
       accessor: (items) => {
-        if (checkTotalProject(items.username) > 0) {
-          return (
-            <Badge color="green">{checkTotalProject(items.username)}</Badge>
-          );
+        const projectAmount = projects?.data?.data?.filter(
+          (data) => data.usernameClient === items.username
+        );
+
+        if (projectAmount?.length > 0) {
+          return <Badge color="green">{projectAmount?.length}</Badge>;
         } else {
           return <Badge color="red">0</Badge>;
         }
@@ -94,14 +87,14 @@ const ProjectClient = () => {
           pauseOnHover
         />
         <br />
-        {dataClient.length ? (
+        {dataClient?.length > 0 ? (
           <Table
             items={dataClient}
             showPagination={false}
             columns={columns}
             totalItems={dataClient.length}
             page={dataClient.currentPage}
-            isLoading={status === "process"}
+            isLoading={projects.status === "process"}
             perPage={dataClient.perpage}
             onPageChange={(page) => dispatch(setPage(page))}
             primaryKey={"_id"}

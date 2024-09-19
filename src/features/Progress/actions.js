@@ -18,19 +18,13 @@ import { getProgress } from "../../api/progress";
 
 const debounceFetchProgress = debounce(getProgress, 1000);
 
-export const fetchProgress = () => {
+export const fetchProgress = (projectId) => {
   return async (dispatch, getState) => {
     dispatch(startFetchingProgress());
-
-    console.log("fetch progress data");
 
     let keyword = getState().progress.keyword || "";
     let currentPage = getState().progress.currentPage || "";
     let params = {};
-
-    console.log("--------------------------");
-    console.log("req from action:", {keyword, currentPage});
-    console.log("--------------------------");
 
     if (keyword === "") {
       params = {
@@ -39,9 +33,11 @@ export const fetchProgress = () => {
     } else {
       params = {
         title: keyword,
-        page: currentPage,
       };
     }
+
+    params.projectId = projectId;
+    params.page = currentPage;
 
     try {
       let {

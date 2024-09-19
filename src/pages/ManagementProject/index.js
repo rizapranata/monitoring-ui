@@ -18,9 +18,12 @@ import FaTrash from "@meronex/icons/fa/FaTrash";
 import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
 import { useDispatch, useSelector } from "react-redux";
-import { setPage } from "../../features/Products/actions";
 import { deleteProject } from "../../api/project";
-import { fetchProject, setKeyword } from "../../features/Projects/actions";
+import {
+  fetchProject,
+  setKeyword,
+  setPage,
+} from "../../features/Projects/actions";
 import { useRouteMatch } from "react-router-dom";
 import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
 import { getPayment, updatePayment } from "../../api/payment";
@@ -28,6 +31,7 @@ import { confirmAlert } from "react-confirm-alert";
 
 const ManagementProject = () => {
   const dispatch = useDispatch();
+  const projects = useSelector((state) => state.projects);
   const { params } = useRouteMatch();
   const [status, setStatus] = React.useState("process");
   const [delstatus, setDelstatus] = React.useState(0);
@@ -35,17 +39,13 @@ const ManagementProject = () => {
   const [payments, setPayments] = React.useState([]);
   const [settled, setSettled] = React.useState([]);
   const [updatePage, setUpdatePage] = React.useState(0);
-  const projects = useSelector((state) => state.projects);
-  const spesificProject =
-    projects?.data.length > 0 &&
-    projects?.data.filter((data) => data.usernameClient === params.username);
 
   React.useEffect(() => {
     setStatus("process");
-    dispatch(fetchProject());
+    dispatch(fetchProject(params.username));
     setStatus("success");
     setDelstatus(0);
-  }, [dispatch, delstatus, projects.keyword]);
+  }, [dispatch, delstatus, projects.currentPage, projects.keyword]);
 
   React.useEffect(() => {
     setStatus("process");
@@ -210,6 +210,11 @@ const ManagementProject = () => {
     );
   }
 
+  const totalData =
+    projects?.data?.data?.length >= 5
+      ? projects?.data?.data?.length + 15
+      : projects?.data?.data?.length + 5;
+
   return (
     <LayoutOne size="large">
       <div>
@@ -233,7 +238,7 @@ const ManagementProject = () => {
         <div className="w-full text-center mb-10 mt-5">
           <InputText
             fullRound
-            value={spesificProject.keyword}
+            value={projects.keyword}
             placeholder="cari nama project..."
             fitContainer
             iconAfter={<ButtonCircle icon={<FaFilter />} />}
@@ -242,16 +247,15 @@ const ManagementProject = () => {
             }}
           />
         </div>
-        {spesificProject.length ? (
+        {projects?.data?.data?.length ? (
           <Table
-            items={spesificProject}
+            items={projects?.data?.data}
             columns={columns}
-            // totalItems={projects.totalItems + 15}
-            // page={projects.currentPage}
-            // isLoading={projects.status === "process"}
-            // perPage={projects.perpage}
-            // onPageChange={(page) => dispatch(setPage(page))}
-            // primaryKey={"_id"}
+            totalItems={totalData}
+            page={projects?.data?.paging.page}
+            isLoading={projects.status === "process"}
+            onPageChange={(page) => dispatch(setPage(page))}
+            primaryKey={"_id"}
           />
         ) : (
           <LayoutOne size="medium">

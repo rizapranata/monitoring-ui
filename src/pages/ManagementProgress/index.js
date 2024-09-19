@@ -33,18 +33,16 @@ import ToastComponent from "../../components/ToastComponent";
 const ManagementProgress = () => {
   let dispatch = useDispatch();
   const { params } = useRouteMatch();
-  let [status, setStatus] = React.useState("process");
   let progress = useSelector((state) => state.progress);
-  let progressByProjectId = progress?.data?.data?.filter(
-    (item) => item.projectId === parseInt(params.projectId)
-  );
+  let [status, setStatus] = React.useState("process");
   let [delstatus, setDelstatus] = React.useState(0);
   const history = useHistory();
-  console.log("progress by id:", progress);
+
+  console.log("data progress:", progress);
 
   React.useEffect(() => {
     setStatus("process");
-    dispatch(fetchProgress());
+    dispatch(fetchProgress(parseInt(params.projectId)));
     setStatus("success");
     setDelstatus(0);
   }, [dispatch, delstatus, progress.currentPage, progress.keyword]);
@@ -148,9 +146,9 @@ const ManagementProgress = () => {
   }
 
   const totalData =
-    progressByProjectId?.length >= 5
-      ? progressByProjectId?.length + 15
-      : progressByProjectId?.length + 5;
+    progress?.data?.data?.length >= 5
+      ? progress?.data?.data?.length + 15
+      : progress?.data?.data?.length + 5;
 
   return (
     <LayoutOne size="large">
@@ -160,7 +158,7 @@ const ManagementProgress = () => {
         <br />
         <Responsive desktop={2} justify="between" items="center">
           <Button onClick={handleClick}>Tambah Progress</Button>
-          {progressByProjectId?.length > 0 && (
+          {progress?.data?.data?.length > 0 && (
             <div className="mr-5 text-right">
               <Button
                 className="inline-block text-red-600 font-bold"
@@ -197,9 +195,9 @@ const ManagementProgress = () => {
             }}
           />
         </div>
-        {progressByProjectId?.length ? (
+        {progress?.data?.data?.length ? (
           <Table
-            items={progressByProjectId}
+            items={progress?.data?.data}
             columns={columns}
             totalItems={totalData}
             page={progress.data.paging.page}
