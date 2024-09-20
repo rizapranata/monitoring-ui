@@ -119,7 +119,7 @@ const Project = () => {
   const totalData =
     projects?.data?.data?.length > 5
       ? projects?.data?.data?.length + 15
-      : projects?.data?.data?.length + 5;
+      : projects?.data?.data?.length
 
   return (
     <LayoutOne size="large">
