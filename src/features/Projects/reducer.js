@@ -19,6 +19,7 @@ const initialState = {
   data: [],
   keyword: "",
   currentPage: 1,
+  perPage: 5,
   totalProject: 0,
   status: statuslist.idle,
 };

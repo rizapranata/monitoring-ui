@@ -48,6 +48,22 @@ export async function getProjects(params) {
     });
 }
 
+export async function getAllProject() {
+  let { token } = localStorage.getItem("auth")
+    ? JSON.parse(localStorage.getItem("auth"))
+    : {};
+  
+  return await axios
+    .get(`${config.api_host}/api/projects/all`, {
+      headers: {
+        authorization: `${token}`,
+      },
+    })
+    .then((response) => {
+      return response;
+    });
+}
+
 export async function getProjectsDetails(projectId) {
   let { token } = localStorage.getItem("auth")
     ? JSON.parse(localStorage.getItem("auth"))

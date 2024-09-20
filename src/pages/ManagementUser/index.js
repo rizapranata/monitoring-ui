@@ -10,9 +10,11 @@ import {
   Badge,
   Button,
   CardAlert,
+  InputText,
 } from "upkit";
 import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
 import FaEdit from "@meronex/icons/fa/FaEdit";
+import FaFilter from "@meronex/icons/fa/FaFilter";
 import FaTrash from "@meronex/icons/fa/FaTrash";
 import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
@@ -28,13 +30,13 @@ const ManagementUser = () => {
   if (user === null || user === undefined) {
     history.push("/login");
   }
-  
-  let dispatch = useDispatch();
-  let [error, setError] = React.useState(false);
-  let { role } = useParams();
-  let { data, limit, page, status, count, setSearch, setPage, setDelstatus } =
+
+  const dispatch = useDispatch();
+  const [error, setError] = React.useState(false);
+  const { role } = useParams();
+  const { data, limit, page, status, setSearch, setPage, setDelstatus } =
     userManagementData();
-  let dataAdmin = data.filter((item) => item.role === role);
+  const dataAdmin = data.filter((item) => item.role === role);
 
   const notifDeleteSuccess = () =>
     toast.success("Delete Success !", {
@@ -118,18 +120,6 @@ const ManagementUser = () => {
     },
   ];
 
-  if (status === "process") {
-    return (
-      <LayoutOne>
-        <div className="text-center py-10">
-          <div className="inline-block">
-            <BounceLoader color="red" />
-          </div>
-        </div>
-      </LayoutOne>
-    );
-  }
-
   return (
     <LayoutOne size="large">
       <div>
@@ -159,17 +149,27 @@ const ManagementUser = () => {
           pauseOnHover
         />
         <br />
-        {dataAdmin.length ? (
+        <div className="w-full text-center mb-10 mt-5">
+          <InputText
+            fullRound
+            placeholder="cari nama user..."
+            fitContainer
+            iconAfter={<ButtonCircle icon={<FaFilter />} />}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+          />
+        </div>
+        {status === "success" ? (
           <Table
+            primaryKey={"id"}
             items={dataAdmin}
-            showPagination={false}
             columns={columns}
             totalItems={dataAdmin.length}
-            page={dataAdmin.currentPage}
+            page={page}
             isLoading={status === "process"}
-            perPage={dataAdmin.perpage}
-            onPageChange={(page) => dispatch(setPage(page))}
-            primaryKey={"_id"}
+            perPage={limit}
+            onPageChange={(page) => setPage(page)}
           />
         ) : (
           <LayoutOne size="medium">

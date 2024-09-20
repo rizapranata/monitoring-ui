@@ -45,7 +45,13 @@ const ManagementProject = () => {
     dispatch(fetchProject(params.username));
     setStatus("success");
     setDelstatus(0);
-  }, [dispatch, delstatus, projects.currentPage, projects.keyword]);
+  }, [
+    dispatch,
+    delstatus,
+    projects.currentPage,
+    projects.keyword,
+    params.totalProject,
+  ]);
 
   React.useEffect(() => {
     setStatus("process");
@@ -201,7 +207,7 @@ const ManagementProject = () => {
   if (status === "process") {
     return (
       <LayoutOne>
-        <div className="text-center py-10">
+        <div className="text-center py-20 my-20">
           <div className="inline-block">
             <BounceLoader color="red" />
           </div>
@@ -209,11 +215,6 @@ const ManagementProject = () => {
       </LayoutOne>
     );
   }
-
-  const totalData =
-    projects?.data?.data?.length >= 5
-      ? projects?.data?.data?.length + 15
-      : projects?.data?.data?.length + 5;
 
   return (
     <LayoutOne size="large">
@@ -247,24 +248,28 @@ const ManagementProject = () => {
             }}
           />
         </div>
-        {projects?.data?.data?.length ? (
+        {projects?.status === "success" ? (
           <Table
+            primaryKey={"id"}
             items={projects?.data?.data}
             columns={columns}
-            totalItems={totalData}
-            page={projects?.data?.paging.page}
-            isLoading={projects.status === "process"}
+            totalItems={parseInt(params.totalProject)}
+            page={projects?.currentPage}
+            perPage={projects?.perPage}
+            isLoading={projects?.status === "process"}
             onPageChange={(page) => dispatch(setPage(page))}
-            primaryKey={"_id"}
           />
         ) : (
-          <LayoutOne size="medium">
-            <CardAlert
-              title={`Data Project kosong`}
-              message="Belum ada data project."
-            />
+          <LayoutOne>
+            <div className="text-center py-20 my-20">
+              <div className="inline-block">
+                <BounceLoader color="red" />
+              </div>
+            </div>
           </LayoutOne>
         )}
+        <br />
+        <br />
       </div>
     </LayoutOne>
   );

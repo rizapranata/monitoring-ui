@@ -96,7 +96,7 @@ function App() {
           <GuardAdminRoute path="/project/edit/:username/:projectId">
             <ProjectEdit />
           </GuardAdminRoute>
-          <GuardAdminRoute path="/manajement-project/:username">
+          <GuardAdminRoute path="/manajement-project/:username/:totalProject">
             <ManagementProject />
           </GuardAdminRoute>
           <GuardAdminRoute path="/progress/tambah/:username/:projectId/:projectName">

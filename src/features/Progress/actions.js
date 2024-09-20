@@ -24,6 +24,7 @@ export const fetchProgress = (projectId) => {
 
     let keyword = getState().progress.keyword || "";
     let currentPage = getState().progress.currentPage || "";
+    let size = getState().progress.perPage || "";
     let params = {};
 
     if (keyword === "") {
@@ -38,6 +39,7 @@ export const fetchProgress = (projectId) => {
 
     params.projectId = projectId;
     params.page = currentPage;
+    params.size = size;
 
     try {
       let {

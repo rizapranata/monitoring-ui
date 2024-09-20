@@ -33,12 +33,10 @@ import ToastComponent from "../../components/ToastComponent";
 const ManagementProgress = () => {
   let dispatch = useDispatch();
   const { params } = useRouteMatch();
-  let progress = useSelector((state) => state.progress);
-  let [status, setStatus] = React.useState("process");
-  let [delstatus, setDelstatus] = React.useState(0);
+  const progress = useSelector((state) => state.progress);
+  const [status, setStatus] = React.useState("process");
+  const [delstatus, setDelstatus] = React.useState(0);
   const history = useHistory();
-
-  console.log("data progress:", progress);
 
   React.useEffect(() => {
     setStatus("process");
@@ -136,7 +134,7 @@ const ManagementProgress = () => {
   if (status === "process") {
     return (
       <LayoutOne>
-        <div className="text-center py-10">
+        <div className="text-center py-20 my-20">
           <div className="inline-block">
             <BounceLoader color="red" />
           </div>
@@ -146,7 +144,7 @@ const ManagementProgress = () => {
   }
 
   const totalData =
-    progress?.data?.data?.length >= 5
+    progress?.data?.data?.length > 5
       ? progress?.data?.data?.length + 15
       : progress?.data?.data?.length + 5;
 
@@ -195,25 +193,29 @@ const ManagementProgress = () => {
             }}
           />
         </div>
-        {progress?.data?.data?.length ? (
+        {progress?.status === "success" ? (
           <Table
+            primaryKey={"id"}
             items={progress?.data?.data}
             columns={columns}
             totalItems={totalData}
-            page={progress.data.paging.page}
-            isLoading={progress.status === "process"}
+            page={progress?.currentPage}
+            perPage={progress?.perPage}
+            isLoading={progress?.status === "process"}
             onPageChange={(page) => dispatch(setPage(page))}
-            primaryKey={"id"}
           />
         ) : (
-          <LayoutOne size="medium">
-            <CardAlert
-              title={`Data Progress kosong`}
-              message="Belum ada data progress."
-            />
+          <LayoutOne>
+            <div className="text-center py-20 my-20">
+              <div className="inline-block">
+                <BounceLoader color="red" />
+              </div>
+            </div>
           </LayoutOne>
         )}
       </div>
+      <br />
+      <br />
     </LayoutOne>
   );
 };

@@ -18,6 +18,7 @@ export const fetchProject = (usernameClient) => {
 
     let keyword = getState().projects.keyword || "";
     let currentPage = getState().projects.currentPage || "";
+    let size = getState().projects.perPage || "";
     let params = {};
 
     if (keyword === "") {
@@ -32,6 +33,7 @@ export const fetchProject = (usernameClient) => {
 
     params.usernameClient = usernameClient;
     params.page = currentPage;
+    params.size = size;
 
     try {
       let {

@@ -1,17 +1,9 @@
 import React from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import BounceLoader from "react-spinners/BounceLoader";
-import {
-  LayoutOne,
-  Text,
-  Button,
-  Table,
-  InputText,
-  ButtonCircle,
-  CardAlert,
-} from "upkit";
+import { LayoutOne, Text, Table, InputText, ButtonCircle } from "upkit";
 import FaFilter from "@meronex/icons/fa/FaFilter";
 import TopBar from "../../components/TopBar";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,7 +15,7 @@ import {
 import { useRouteMatch } from "react-router-dom";
 import ZoViewShow from "@meronex/icons/zo/ZoViewShow";
 import ZoViewHide from "@meronex/icons/zo/ZoViewHide";
-import { getPayment, updatePayment } from "../../api/payment";
+import { getPayment } from "../../api/payment";
 import { confirmAlert } from "react-confirm-alert";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
@@ -38,10 +30,7 @@ const Project = () => {
   const [updatePage, setUpdatePage] = React.useState(0);
   const { user } = useSelector((state) => state.auth);
   const history = useHistory();
-
   const projects = useSelector((state) => state.projects);
-
-  console.log("project:", projects);
 
   React.useEffect(() => {
     setStatus("process");
@@ -85,17 +74,6 @@ const Project = () => {
     }
   };
 
-  const notifDelete = () =>
-    toast.success("Delete project berhasil!", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
   const columns = [
     { Header: "Nama Project", accessor: "name" },
     { Header: "Deskripsi", accessor: "desc" },
@@ -129,7 +107,7 @@ const Project = () => {
   if (status === "process") {
     return (
       <LayoutOne>
-        <div className="text-center py-10">
+        <div className="text-center py-20 my-20">
           <div className="inline-block">
             <BounceLoader color="red" />
           </div>
@@ -139,7 +117,7 @@ const Project = () => {
   }
 
   const totalData =
-    projects?.data?.data?.length >= 2
+    projects?.data?.data?.length > 5
       ? projects?.data?.data?.length + 15
       : projects?.data?.data?.length + 5;
 
@@ -172,22 +150,24 @@ const Project = () => {
             }}
           />
         </div>
-        {projects?.data?.data?.length ? (
+        {projects?.status === "success" ? (
           <Table
+            primaryKey={"id"}
             items={projects?.data?.data}
             columns={columns}
             totalItems={totalData}
-            page={projects?.data?.paging.page}
-            isLoading={projects.status === "process"}
+            page={projects?.currentPage}
+            perPage={projects?.perPage}
+            isLoading={projects?.status === "process"}
             onPageChange={(page) => dispatch(setPage(page))}
-            primaryKey={"_id"}
           />
         ) : (
-          <LayoutOne size="medium">
-            <CardAlert
-              title={`Data Project kosong`}
-              message="Belum ada data project."
-            />
+          <LayoutOne>
+            <div className="text-center py-20 my-20">
+              <div className="inline-block">
+                <BounceLoader color="red" />
+              </div>
+            </div>
           </LayoutOne>
         )}
       </div>

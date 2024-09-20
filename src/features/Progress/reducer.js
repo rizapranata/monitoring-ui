@@ -24,6 +24,7 @@ const statuslist = {
 const initialState = {
   data: [],
   keyword: "",
+  perPage: 5,
   imageList: [],
   currentPage: 1,
   titleAndDesc: {},
