@@ -19,7 +19,7 @@ const ManagementUserAdd = () => {
   const [selectedOptionStatus, setSelectedOptionStatus] = React.useState("");
   const [error, setError] = React.useState(false);
 
-  let { handleSubmit, register, errors, setValue, watch, getValues } =
+  let { handleSubmit, register, errors, watch } =
     useForm();
   watch();
 
@@ -64,7 +64,7 @@ const ManagementUserAdd = () => {
         <LayoutOne size="medium">
           <CardAlert
             title="Perhatian!"
-            message="Username sudah terdaftar. Mohon untuk menggunakan username lain."
+            message="Terjadi kesalahan, mohon untuk periksa data yang anda masukkan."
           />
         </LayoutOne>
       ) : (

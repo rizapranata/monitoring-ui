@@ -8,92 +8,122 @@ import {
   Textarea,
 } from "upkit";
 import TopBar from "../../components/TopBar";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { rules } from "./validations";
-import { createProgress } from "../../api/progress";
-import { useDispatch, useSelector } from "react-redux";
+import { config } from "../../config";
 import {
-  addImage,
-  clearImage,
-  removeImage,
-} from "../../features/Progress/actions";
+  deleteImageProgress,
+  getProgressDetail,
+  addProgressImage,
+  updateProgress,
+} from "../../api/progress";
 import { useRouteMatch } from "react-router-dom";
 import TiDeleteOutline from "@meronex/icons/ti/TiDeleteOutline";
+import { BounceLoader } from "react-spinners";
 import ToastComponent from "../../components/ToastComponent";
 
-const ProgressAdd = () => {
+const ProgressEdit = () => {
   let history = useHistory();
   const { params } = useRouteMatch();
-  const dispatch = useDispatch();
-  const progressReducer = useSelector((store) => store.progress);
-  const imageList = progressReducer.imageList;
+  const [status, setStatus] = React.useState("process");
+  const [images, setImages] = React.useState([]);
+  const [delstatus, setDelstatus] = React.useState(0);
+  const [addImageStatus, setAddImageStatus] = React.useState(0);
 
-  let { handleSubmit, register, errors, watch, getValues } = useForm();
+  let { handleSubmit, register, errors, watch, getValues, setValue } =
+    useForm();
 
   watch();
 
   React.useEffect(() => {
+    setStatus("process");
+    getProgressDetail(params?.progressId)
+      .then(({ data }) => {
+        setValue("title", data.data.title);
+        setValue("desc", data.data.desc);
+      })
+      .finally(() => setStatus("idle"));
+
     register({ name: "title" }, rules.title);
     register({ name: "desc" }, rules.desc);
-    register({ name: "images" }, rules.images);
-  }, [register]);
+  }, [params.progressId, register, setValue]);
 
-  const notifError = () =>
-    toast.success("Terjadi Kesalahan!", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+  React.useEffect(() => {
+    setDelstatus(0);
+    setAddImageStatus(0);
+    getProgressDetail(params?.progressId)
+      .then(({ data }) => {
+        setImages(data.data.images);
+      })
+      .finally(() => setStatus("idle"));
+  }, [delstatus, addImageStatus, params?.progressId]);
 
-  const onChangeHandler = (e) => {
+  const onChangeHandler = async (e) => {
+    const progressId = params?.progressId;
     if (e.target.files.length) {
-      const imeageFile = e.target.files[0];
-      const payload = {
-        imeageFile,
-      };
+      const image = e.target.files[0];
 
-      dispatch(addImage(payload));
+      let payload = new FormData();
+      payload.append("images", image);
+      payload.append("progressId", progressId);
+
+      await addProgressImage(payload).then(({ data }) => {
+        console.log("add img:", data);
+        if (data.success === true) {
+          ToastComponent("success", "Tambah Gambar Success !");
+          setAddImageStatus(1);
+        }
+      });
     }
   };
 
-  const handleDelete = (id) => {
-    console.log(id);
-    dispatch(removeImage(id));
+  const handleDeleteImage = async (id) => {
+    if (images.length <= 1) {
+      ToastComponent("error", "Ooops..! minimal ada satu gambar.");
+    } else {
+      if (window.confirm("Delete this Image?")) {
+        await deleteImageProgress(parseInt(id)).then(({ data }) => {
+          console.log("delete img:", data);
+          if (data.success === true) {
+            setDelstatus(1);
+            ToastComponent("success", "Delete Success!");
+          }
+        });
+      }
+    }
   };
 
   const onSubmit = async (formHook) => {
-    const imageFiles = [];
-    let payload = new FormData();
+    const progressId = params?.progressId;
+    const payload = {
+      id: progressId,
+      title: formHook.title,
+      desc: formHook.desc,
+    };
 
-    imageList.map((image) => imageFiles.push(image.imeageFile));
-    console.log("image progress:", imageFiles);
-
-    imageFiles.forEach((image) => {
-      payload.append("images", image);
-    });
-
-    payload.append("desc", formHook.desc);
-    payload.append("title", formHook.title);
-    payload.append("projectId", parseInt(params.projectId));
-    payload.append("usernameClient", params.username);
-
-    const { data } = await createProgress(payload);
-
+    const { data } = await updateProgress(payload);
     if (data.error) {
-      notifError();
       return;
+    } else {
+      ToastComponent("success", "Edit Progress Success !");
     }
 
-    ToastComponent("success", "Progress success ditambahkan");
-    dispatch(clearImage(""));
     history.goBack();
   };
+
+  if (status === "process") {
+    return (
+      <LayoutOne>
+        <div className="text-center py-10">
+          <div className="inline-block">
+            <BounceLoader color="red" />
+          </div>
+        </div>
+      </LayoutOne>
+    );
+  }
 
   return (
     <LayoutOne size="large">
@@ -151,7 +181,6 @@ const ProgressAdd = () => {
               type="file"
               name="images"
               multiple
-              required
               ref={register(rules.images)}
               onChange={onChangeHandler}
             />
@@ -167,8 +196,8 @@ const ProgressAdd = () => {
                 alignItems: "center",
               }}
             >
-              {imageList.length > 0 &&
-                imageList.map((image, index) => (
+              {images.length > 0 &&
+                images.map((image, index) => (
                   <div
                     key={index}
                     style={{
@@ -190,13 +219,15 @@ const ProgressAdd = () => {
                         borderRadius: "50%",
                         cursor: "pointer",
                       }}
-                      onClick={() => handleDelete(image.imageId)}
+                      onClick={() => {
+                        handleDeleteImage(image.id);
+                      }}
                     >
                       <TiDeleteOutline />
                     </div>
                     <img
-                      src={URL.createObjectURL(image.imeageFile)}
-                      alt={image.imeageFile.nmae}
+                      src={`${config.api_host}/public/upload/${image.imageUrl}`}
+                      alt={image.imeageFile}
                       style={{ width: "100px", height: "100px", margin: 10 }}
                     />
                   </div>
@@ -214,4 +245,4 @@ const ProgressAdd = () => {
   );
 };
 
-export default ProgressAdd;
+export default ProgressEdit;

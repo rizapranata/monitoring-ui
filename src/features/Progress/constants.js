@@ -1,4 +1,13 @@
 export const ADD_IMAGE = "features/Progress/ADD_IMAGE";
+export const EDIT_IMAGE = "features/Progress/EDIT_IMAGE";
+export const CLEAR_IMAGE = "features/Progress/CLEAR_IMAGE";
 export const REMOVE_IMAGE = "features/Progress/REMOVE_IMAGE";
 export const CLEAR_ITEMS = "features/Cart/CLEAR_ITEMS";
 export const SET_ITEMS = "features/Cart/SET_ITEMS";
+export const SET_PAGE = "features/Progress/SET_PAGE";
+export const NEXT_PAGE = "features/Progress/NEXT_PAGE";
+export const PREV_PAGE = "features/Progress/PREV_PAGE";
+export const START_FETCHING_PROGRESS = "features/Projects/START_FETCHING_PROGRESS";
+export const SUCCESS_FETCHING_PROGRESS = "features/Projects/SUCCESS_FETCHING_PROGRESS";
+export const ERROR_FETCHING_PROGRESS = "features/Projects/ERROR_FETCHING_PROGRESS";
+export const SET_KEYWORD = "features/Projects/SET_KEYWORD";

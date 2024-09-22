@@ -1,15 +1,13 @@
 import axios from "axios";
 import { config } from "../config";
 
-export async function createProject(payload) {
+export async function updatePayment(payload) {
   let { token } = localStorage.getItem("auth")
     ? JSON.parse(localStorage.getItem("auth"))
     : {};
 
-  console.log("Payload api:", payload);
-
   return await axios
-    .post(`${config.api_host}/api/project`, payload, {
+    .put(`${config.api_host}/api/payment/${payload.id}`, payload, {
       headers: {
         authorization: `${token}`,
       },
@@ -29,15 +27,13 @@ export async function createProject(payload) {
     });
 }
 
-export async function getProjects(params) {
+export async function getPayment(params) {
   let { token } = localStorage.getItem("auth")
     ? JSON.parse(localStorage.getItem("auth"))
     : {};
 
-  console.log("params:", params);
-
   return await axios
-    .get(`${config.api_host}/api/projects`, {
+    .get(`${config.api_host}/api/payment`, {
       params,
       headers: {
         authorization: `${token}`,
@@ -48,61 +44,19 @@ export async function getProjects(params) {
     });
 }
 
-export async function getAllProject() {
+export async function getPaymentDetail(paymentId) {
   let { token } = localStorage.getItem("auth")
     ? JSON.parse(localStorage.getItem("auth"))
     : {};
-  
+
   return await axios
-    .get(`${config.api_host}/api/projects/all`, {
+    .get(`${config.api_host}/api/payment/${paymentId}`, {
       headers: {
         authorization: `${token}`,
       },
     })
     .then((response) => {
       return response;
-    });
-}
-
-export async function getProjectsDetails(projectId) {
-  let { token } = localStorage.getItem("auth")
-    ? JSON.parse(localStorage.getItem("auth"))
-    : {};
-
-  return await axios
-    .get(`${config.api_host}/api/project/${projectId}`, {
-      headers: {
-        authorization: `${token}`,
-      },
-    })
-    .then((response) => {
-      return response;
-    });
-}
-
-export async function updateProject(payload) {
-  let { token } = localStorage.getItem("auth")
-    ? JSON.parse(localStorage.getItem("auth"))
-    : {};
-
-  return await axios
-    .put(`${config.api_host}/api/project/${payload.id}`, payload, {
-      headers: {
-        authorization: `${token}`,
-      },
-    })
-    .then((res) => {
-      return res;
-    })
-    .catch((error) => {
-      if (error.response) {
-        console.log("error response: ", error.response);
-      } else if (error.request) {
-        console.log("error request: ", error.request);
-      } else {
-        console.log("Error message", error.message);
-      }
-      console.log(error.config);
     });
 }
 

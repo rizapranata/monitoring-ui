@@ -41,6 +41,11 @@ import ManagementProgress from "./pages/ManagementProgress";
 import ProjectAdd from "./pages/ProjectAdd";
 import ManagementProject from "./pages/ManagementProject";
 import ProjectClient from "./pages/ManagementProject/projectClient";
+import ProgressEdit from "./pages/ProgressEdit";
+import ProjectEdit from "./pages/ProjectEdit";
+import PreviewProgress from "./pages/PreviewProgress";
+import Project from "./pages/UserPreview/Project";
+import GuardClientRoute from "./components/GuardClientRoute";
 
 function App() {
   React.useEffect(() => {
@@ -82,21 +87,36 @@ function App() {
           <GuardAdminRoute path="/edit-produk/:product_id">
             <ProductEdit />
           </GuardAdminRoute>
-          <GuardAdminRoute path="/manajement-progress/:username/:projectName">
+          <GuardAdminRoute path="/manajement-progress/:username/:projectId/:projectName">
             <ManagementProgress />
           </GuardAdminRoute>
           <GuardAdminRoute path="/project/tambah/:username">
             <ProjectAdd />
           </GuardAdminRoute>
-          <GuardAdminRoute path="/manajement-project/:username">
+          <GuardAdminRoute path="/project/edit/:username/:projectId">
+            <ProjectEdit />
+          </GuardAdminRoute>
+          <GuardAdminRoute path="/manajement-project/:username/:totalProject">
             <ManagementProject />
           </GuardAdminRoute>
-          <GuardAdminRoute path="/progress/tambah/:username/:projectName">
+          <GuardAdminRoute path="/progress/tambah/:username/:projectId/:projectName">
             <ProgressAdd />
+          </GuardAdminRoute>
+          <GuardAdminRoute path="/progress/edit/:username/:projectName/:progressId">
+            <ProgressEdit />
           </GuardAdminRoute>
           <GuardAdminRoute path="/project-client">
             <ProjectClient />
           </GuardAdminRoute>
+          <GuardClientRoute path="/project">
+            <Project />
+          </GuardClientRoute>
+          <GuardAdminRoute path="/progress/preview/:customer/:projectName/:projectId">
+            <PreviewProgress />
+          </GuardAdminRoute>
+          <GuardClientRoute path="/preview/:customer/:projectName/:projectId">
+            <PreviewProgress />
+          </GuardClientRoute>
           <GuardDoctorRoute path="/rekam-medis">
             <MedicalRecord />
           </GuardDoctorRoute>

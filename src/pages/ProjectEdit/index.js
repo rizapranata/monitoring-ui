@@ -12,16 +12,15 @@ import TopBar from "../../components/TopBar";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { rules } from "./validations";
-import { userManagementData } from "../../hooks/userManagement";
-import { createProject } from "../../api/project";
+import { getProjectsDetails, updateProject } from "../../api/project";
 import { useRouteMatch } from "react-router-dom";
-import { toast } from "react-toastify";
+import { BounceLoader } from "react-spinners";
+import ToastComponent from "../../components/ToastComponent";
 
-const ProjectAdd = () => {
+const ProjectEdit = () => {
   let history = useHistory();
+  const [status, setStatus] = React.useState("process");
   const { params } = useRouteMatch();
-  const { data, status } = userManagementData();
-  const dataClient = data.filter((item) => item.role === "client");
 
   let { handleSubmit, register, errors, setValue, watch, getValues } =
     useForm();
@@ -29,42 +28,47 @@ const ProjectAdd = () => {
   watch();
 
   React.useEffect(() => {
+    setStatus("prosess");
+    getProjectsDetails(params?.projectId)
+      .then(({ data }) => {
+        setValue("name", data.data.name);
+        setValue("desc", data.data.desc);
+      })
+      .finally(() => setStatus("idle"));
+
     register({ name: "name" }, rules.name);
     register({ name: "desc" }, rules.desc);
-    // register({ name: "usernameClient" }, rules.usernameClient);
-  }, [register]);
-
-  const notifSuccessCreate = () =>
-    toast.success("Project baru berhasi dibuat!", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
-  const updateValue = (field, value) =>
-    setValue(field, value, { shouldValidate: true, shouldDirty: true });
+  }, [params?.projectId, register, setValue]);
 
   const onSubmit = async (formHook) => {
     const payload = {
+      id: parseInt(params?.projectId),
       name: formHook.name,
       desc: formHook.desc,
       usernameClient: params.username,
     };
-    console.log("formhook:", payload);
-    const { data } = await createProject(payload);
+    const { data } = await updateProject(payload);
 
     if (data.error) {
       return;
     } else {
-      notifSuccessCreate();
+      ToastComponent("success", "Update Project Success!");
     }
 
     history.goBack();
   };
+
+  if (status === "process") {
+    return (
+      <LayoutOne>
+        <div className="text-center py-10">
+          <div className="inline-block">
+            <BounceLoader color="red" />
+          </div>
+        </div>
+      </LayoutOne>
+    );
+  }
 
   return (
     <LayoutOne size="large">
@@ -101,24 +105,6 @@ const ProjectAdd = () => {
               ref={register(rules.desc)}
             />
           </FormControl>
-
-          {/* <FormControl
-            label="Pilih Client"
-            errorMessage={errors.usernameClient?.message}
-            color="black"
-          >
-            <Select
-              options={dataClient.map((client) => ({
-                label: client.name,
-                value: client.username,
-              }))}
-              value={getValues().usernameClient}
-              onChange={(option) => updateValue("usernameClient", option)}
-              isLoading={status}
-              sDisabled={status || !dataClient.length}
-              name="usernameClient"
-            />
-          </FormControl> */}
           <br />
 
           <Button fitContainer>Simpan</Button>
@@ -130,4 +116,4 @@ const ProjectAdd = () => {
   );
 };
 
-export default ProjectAdd;
+export default ProjectEdit;

@@ -20,10 +20,18 @@ export function userManagementData() {
 
   let fetchUsers = React.useCallback(
     async function () {
+      let params = {};
+      if (search !== "") {
+        params.name = search;
+      }
+
+      params.page = page;
+      params.size = limit;
+
       setStatus(statuslist.process);
       let {
         data: { data, count, error },
-      } = await getAllUser(search);
+      } = await getAllUser(params);
 
       if (error) {
         setStatus(statuslist.error);
@@ -35,7 +43,7 @@ export function userManagementData() {
       setCount(count);
       setDelstatus(0);
     },
-    [page, limit, delstatus]
+    [page, limit, delstatus, search]
   );
 
   React.useEffect(() => {
@@ -51,6 +59,6 @@ export function userManagementData() {
     setPage,
     setLimit,
     setSearch,
-    setDelstatus
+    setDelstatus,
   };
 }

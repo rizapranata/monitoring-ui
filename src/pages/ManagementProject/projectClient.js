@@ -1,49 +1,53 @@
 import React from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BounceLoader from "react-spinners/BounceLoader";
-import { LayoutOne, Text, Table, ButtonCircle, Badge, CardAlert } from "upkit";
-import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
+import {
+  LayoutOne,
+  Text,
+  Table,
+  ButtonCircle,
+  Badge,
+  CardAlert,
+  InputText,
+} from "upkit";
 import FaEdit from "@meronex/icons/fa/FaEdit";
+import FaFilter from "@meronex/icons/fa/FaFilter";
 import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
 import { useDispatch, useSelector } from "react-redux";
 import { userManagementData } from "../../hooks/userManagement";
 import { useParams } from "react-router-dom";
-import { fetchProject } from "../../features/Projects/actions";
+import { getAllProject } from "../../api/project";
 
 const ProjectClient = () => {
-  let dispatch = useDispatch();
-  const [status, setStatus] = React.useState("process");
-  const projects = useSelector((state) => state.projects);
+  const [statusData, setStatusData] = React.useState("process");
+  const [allProject, setAllProject] = React.useState([]);
   const { role } = useParams();
-  const { data, limit, page, count, setSearch, setPage, setDelstatus } =
+  const { data, setPage, setSearch, status, page, limit, count } =
     userManagementData();
   const dataClient = data.filter((item) => item.role === "client");
 
-  const checkTotalProject = (client) => {
-    const total = projects.data.filter(
-      (data) => data.usernameClient === client
-    );
-
-    return total.length;
-  };
-
   React.useEffect(() => {
-    setStatus("process");
-    dispatch(fetchProject());
-    setStatus("success");
-  }, [dispatch]);
+    setStatusData("process");
+    getAllProject()
+      .then(({ data }) => {
+        setAllProject(data.data);
+      })
+      .finally(() => setStatusData("success"));
+  }, []);
 
   const columns = [
     { Header: "Nama Client", accessor: "name" },
     {
       Header: "Jumlah Project",
       accessor: (items) => {
-        if (checkTotalProject(items.username) > 0) {
-          return (
-            <Badge color="green">{checkTotalProject(items.username)}</Badge>
-          );
+        const projectAmount = allProject?.filter(
+          (data) => data.usernameClient === items.username
+        );
+
+        if (projectAmount?.length > 0) {
+          return <Badge color="green">{projectAmount?.length}</Badge>;
         } else {
           return <Badge color="red">0</Badge>;
         }
@@ -52,12 +56,17 @@ const ProjectClient = () => {
     {
       Header: "Action",
       accessor: (items) => {
+        const projectAmount = allProject?.filter(
+          (data) => data.usernameClient === items.username
+        );
         return (
           <div>
             {/* <Link to={`/user-details/${items.username}`}>
               <ButtonCircle icon={<BiCommentDetail />} />
             </Link> */}
-            <Link to={`manajement-project/${items.username}`}>
+            <Link
+              to={`manajement-project/${items.username}/${projectAmount?.length}`}
+            >
               <ButtonCircle icon={<FaEdit />} />
             </Link>
           </div>
@@ -66,7 +75,7 @@ const ProjectClient = () => {
     },
   ];
 
-  if (status === "process") {
+  if (statusData === "process") {
     return (
       <LayoutOne>
         <div className="text-center py-10">
@@ -95,17 +104,27 @@ const ProjectClient = () => {
           pauseOnHover
         />
         <br />
-        {dataClient.length ? (
+        <div className="w-full text-center mb-10 mt-5">
+          <InputText
+            fullRound
+            placeholder="cari nama customer..."
+            fitContainer
+            iconAfter={<ButtonCircle icon={<FaFilter />} />}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+          />
+        </div>
+        {status === "success" ? (
           <Table
+            primaryKey={"id"}
             items={dataClient}
-            showPagination={false}
             columns={columns}
             totalItems={dataClient.length}
-            page={dataClient.currentPage}
+            page={page}
             isLoading={status === "process"}
-            perPage={dataClient.perpage}
-            onPageChange={(page) => dispatch(setPage(page))}
-            primaryKey={"_id"}
+            perPage={limit}
+            onPageChange={(page) => setPage(page)}
           />
         ) : (
           <LayoutOne size="medium">

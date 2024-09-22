@@ -10,9 +10,6 @@ const rules = {
       message: "Panjang judul minimal 3 karakter",
     },
   },
-  usernameClient: {
-    required: { value: true, message: "Client tidak boleh kosong" },
-  },
   desc: {
     required: { value: true, message: "Deskripsi tidak boleh kosong!" },
     maxLength: {
@@ -25,7 +22,7 @@ const rules = {
     },
   },
   images: {
-    required: { value: true, message: "image tidak boleh kosong." },
+    option: { value: true, message: "" },
   },
 };
 export { rules };

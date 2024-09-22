@@ -1,13 +1,13 @@
 const rules = {
-  title: {
-    required: { value: true, message: "Judul progress tidak boleh kosong." },
+  name: {
+    required: { value: true, message: "Nama project tidak boleh kosong." },
     maxLength: {
       value: 100,
-      message: "Panjang Judul maksimal 100 karakter",
+      message: "Panjang nama project maksimal 100 karakter",
     },
     minLength: {
       value: 3,
-      message: "Panjang judul minimal 3 karakter",
+      message: "Panjang nama project minimal 3 karakter",
     },
   },
   usernameClient: {
@@ -23,9 +23,6 @@ const rules = {
       value: 3,
       message: "Panjang deskripsi minimal 3 karakter",
     },
-  },
-  images: {
-    required: { value: true, message: "image tidak boleh kosong." },
   },
 };
 export { rules };

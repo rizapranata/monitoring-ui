@@ -1,6 +1,7 @@
 import React from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "react-confirm-alert/src/react-confirm-alert.css";
 import BounceLoader from "react-spinners/BounceLoader";
 import {
   LayoutOne,
@@ -17,32 +18,130 @@ import FaTrash from "@meronex/icons/fa/FaTrash";
 import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
 import { useDispatch, useSelector } from "react-redux";
-import { setPage } from "../../features/Products/actions";
 import { deleteProject } from "../../api/project";
-import { fetchProject, setKeyword } from "../../features/Projects/actions";
+import {
+  fetchProject,
+  setKeyword,
+  setPage,
+} from "../../features/Projects/actions";
 import { useRouteMatch } from "react-router-dom";
-import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
+import { getPayment, updatePayment } from "../../api/payment";
+import { confirmAlert } from "react-confirm-alert";
 
 const ManagementProject = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const projects = useSelector((state) => state.projects);
   const { params } = useRouteMatch();
   const [status, setStatus] = React.useState("process");
   const [delstatus, setDelstatus] = React.useState(0);
-  const projects = useSelector((state) => state.projects);
-  const spesificProject = projects.data.filter(
-    (data) => data.usernameClient === params.username
-  );
+  const [enabled, setEnabled] = React.useState(false);
+  const [payments, setPayments] = React.useState([]);
+  const [settled, setSettled] = React.useState([]);
+  const [updatePage, setUpdatePage] = React.useState(0);
 
   React.useEffect(() => {
     setStatus("process");
-    dispatch(fetchProject());
+    dispatch(fetchProject(params.username));
     setStatus("success");
     setDelstatus(0);
-  }, [dispatch, delstatus, projects.keyword]);
+  }, [
+    dispatch,
+    delstatus,
+    projects.currentPage,
+    projects.keyword,
+    params.totalProject,
+    params.username,
+  ]);
+
+  React.useEffect(() => {
+    setStatus("process");
+    getPayment()
+      .then(({ data }) => {
+        setPayments(data);
+        checkPaymentIsSettled(data);
+        setUpdatePage(0);
+      })
+      .finally(() => setStatus("success"));
+  }, [enabled, updatePage]);
+
+  const checkPaymentIsSettled = (data) => {
+    const settledData = data.data.filter((data) => data.isSettle === true);
+    setSettled(settledData);
+  };
+
+  const updatePaymentData = (projectId, payment) => {
+    try {
+      const findingByProjectId = payments?.data.find(
+        (data) => data.projectId === projectId
+      );
+      const payload = {
+        id: findingByProjectId.id,
+        isSettle: !payment,
+      };
+
+      updatePayment(payload)
+        .then(({ data }) => {
+          console.log("edit result:", data);
+          if (data.status === "success") {
+            setEnabled(!payment);
+            setUpdatePage(1);
+          }
+        })
+        .finally(() => setStatus("idle"));
+    } catch (error) {
+      console.log("error:", error);
+    }
+  };
+
+  const handleDelete = (projectId, title) => {
+    confirmAlert({
+      title: "KONFIRMASI HAPUS..!",
+      message: `Apakah project "${title}" ingin dihapus?`,
+      closeOnEscape: true,
+      closeOnClickOutside: false,
+      keyCodeForClose: [8, 32],
+      buttons: [
+        {
+          label: "Ya",
+          onClick: () => {
+            deleteProject(parseInt(projectId));
+            setDelstatus(1);
+            notifDelete();
+          },
+        },
+        {
+          label: "Tidak",
+          onClick: () => {},
+        },
+      ],
+    });
+  };
+
+  const handleUpdatePayment = (projectId, payment, projName) => {
+    confirmAlert({
+      title: "KONFIRMASI PEMBAYARAN..!",
+      message: !payment
+        ? `Apakah project "${projName}" sudah lunas?`
+        : `Apakah project "${projName}" belum lunas?`,
+      closeOnEscape: true,
+      closeOnClickOutside: false,
+      keyCodeForClose: [8, 32],
+      buttons: [
+        {
+          label: "Ya",
+          onClick: () => updatePaymentData(projectId, payment),
+        },
+        {
+          label: "Tidak",
+          onClick: () => {},
+        },
+      ],
+    });
+  };
 
   const notifDelete = () =>
-    toast.success("Delete Success !", {
+    toast.success("Hapus project berhasil!", {
       position: "bottom-center",
       autoClose: 5000,
       hideProgressBar: true,
@@ -52,42 +151,54 @@ const ManagementProject = () => {
       progress: undefined,
     });
 
-  const handleClick = (projectName) => {
-    const username = params.username;
-
-    history.push(`/manajement-progress/${username}/${projectName}`);
-  };
-
   const columns = [
-    { Header: "Nama", accessor: "name" },
+    { Header: "Nama Project", accessor: "name" },
     { Header: "Deskripsi", accessor: "desc" },
     { Header: "Nama Client", accessor: "usernameClient" },
-    // {
-    //   Header: "Kategori",
-    //   accessor: (items) => {
-    //     return <Badge color="blue">{items.category.name}</Badge>;
-    //   },
-    // },
     {
       Header: "Action",
       accessor: (items) => {
+        const checkPayment = settled.find(
+          (data) => data.projectId === items.id
+        );
         return (
           <div>
-            {/* <Link to={`/manajement-progress/${items.name}`}>
+            <Link to={`/project/edit/${params?.username}/${items.id}`}>
               <ButtonCircle icon={<FaEdit />} />
-            </Link> */}
-            <ButtonCircle icon={<FaEdit />} onClick={() => handleClick(items.name)} />
-
+            </Link>
+            <Link
+              to={`/manajement-progress/${params?.username}/${items.id}/${items.name}`}
+            >
+              <ButtonCircle icon={<BiCommentDetail />} />
+            </Link>
             <ButtonCircle
-              onClick={() => {
-                if (window.confirm("Delete this product ?")) {
-                  deleteProject(parseInt(items.id));
-                  setDelstatus(1);
-                  notifDelete();
-                }
-              }}
+              onClick={() => handleDelete(items.id, items.name)}
               icon={<FaTrash />}
             />
+            <div className="mt-5 items-center">
+              <button
+                type="button"
+                className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors duration-300 ${
+                  checkPayment?.isSettle ? "bg-green-400" : "bg-gray-300"
+                }`}
+                onClick={() =>
+                  handleUpdatePayment(
+                    items.id,
+                    checkPayment?.isSettle,
+                    items.name
+                  )
+                }
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                    checkPayment?.isSettle ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+              <span className="ml-3 text-gray-500">
+                {checkPayment?.isSettle ? "Sudah Lunas" : "Belum Lunas"}
+              </span>
+            </div>
           </div>
         );
       },
@@ -97,7 +208,7 @@ const ManagementProject = () => {
   if (status === "process") {
     return (
       <LayoutOne>
-        <div className="text-center py-10">
+        <div className="text-center py-20 my-20">
           <div className="inline-block">
             <BounceLoader color="red" />
           </div>
@@ -106,6 +217,11 @@ const ManagementProject = () => {
     );
   }
 
+  const totalData =
+    parseInt(params.totalProject) > 5
+      ? parseInt(params.totalProject) + 3
+      : parseInt(params.totalProject);
+
   return (
     <LayoutOne size="large">
       <div>
@@ -113,7 +229,7 @@ const ManagementProject = () => {
         <Text as="h3">{`Project ${params.username}`}</Text>
         <br />
         <Link to={`/project/tambah/${params.username}`}>
-          <Button>Tambah baru</Button>
+          <Button>Tambah Project</Button>
         </Link>
         <ToastContainer
           position="bottom-center"
@@ -129,7 +245,7 @@ const ManagementProject = () => {
         <div className="w-full text-center mb-10 mt-5">
           <InputText
             fullRound
-            value={spesificProject.keyword}
+            value={projects.keyword}
             placeholder="cari nama project..."
             fitContainer
             iconAfter={<ButtonCircle icon={<FaFilter />} />}
@@ -138,25 +254,28 @@ const ManagementProject = () => {
             }}
           />
         </div>
-        {spesificProject.length ? (
+        {projects?.status === "success" ? (
           <Table
-            items={spesificProject}
+            primaryKey={"id"}
+            items={projects?.data?.data}
             columns={columns}
-            // totalItems={projects.totalItems + 15}
-            // page={projects.currentPage}
-            // isLoading={projects.status === "process"}
-            // perPage={projects.perpage}
+            totalItems={totalData}
+            page={projects?.currentPage}
+            perPage={projects?.perPage}
+            isLoading={projects?.status === "process"}
             onPageChange={(page) => dispatch(setPage(page))}
-            primaryKey={"_id"}
           />
         ) : (
-          <LayoutOne size="medium">
-            <CardAlert
-              title={`Data Project kosong`}
-              message="Belum ada data project."
-            />
+          <LayoutOne>
+            <div className="text-center py-20 my-20">
+              <div className="inline-block">
+                <BounceLoader color="red" />
+              </div>
+            </div>
           </LayoutOne>
         )}
+        <br />
+        <br />
       </div>
     </LayoutOne>
   );

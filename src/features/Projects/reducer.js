@@ -1,6 +1,9 @@
 import {
   ERROR_FETCHING_PORJECT,
+  NEXT_PAGE,
+  PREV_PAGE,
   SET_KEYWORD,
+  SET_PAGE,
   START_FETCHING_PROJECT,
   SUCCESS_FETCHING_PORJECT,
 } from "./constants";
@@ -15,8 +18,10 @@ const statuslist = {
 const initialState = {
   data: [],
   keyword: "",
-  status: statuslist.idle,
+  currentPage: 1,
+  perPage: 5,
   totalProject: 0,
+  status: statuslist.idle,
 };
 
 export default function reducer(state = initialState, action) {
@@ -32,6 +37,7 @@ export default function reducer(state = initialState, action) {
         ...state,
         data: action.data,
         totalProject: action.count,
+        status: statuslist.success,
       };
 
     case ERROR_FETCHING_PORJECT:
@@ -40,10 +46,22 @@ export default function reducer(state = initialState, action) {
         status: statuslist.error,
       };
 
+    case SET_PAGE:
+      return {
+        ...state,
+        currentPage: action.currentPage,
+      };
+
+    case NEXT_PAGE:
+      return { ...state, currentPage: state.currentPage + 1 };
+
+    case PREV_PAGE:
+      return { ...state, currentPage: state.currentPage - 1 };
+
     case SET_KEYWORD:
-      return { 
-        ...state, 
-        keyword: action.keyword, 
+      return {
+        ...state,
+        keyword: action.keyword,
       };
 
     default:

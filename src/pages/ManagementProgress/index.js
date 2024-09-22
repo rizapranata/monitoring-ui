@@ -1,7 +1,7 @@
 import React from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { formatRupiah } from "../../utils/format-rupiah";
+import "react-confirm-alert/src/react-confirm-alert.css";
 import BounceLoader from "react-spinners/BounceLoader";
 import {
   LayoutOne,
@@ -9,95 +9,121 @@ import {
   Button,
   Table,
   InputText,
-  Badge,
   ButtonCircle,
   CardAlert,
+  Responsive,
 } from "upkit";
 import FaFilter from "@meronex/icons/fa/FaFilter";
 import FaEdit from "@meronex/icons/fa/FaEdit";
 import FaTrash from "@meronex/icons/fa/FaTrash";
-import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
 import { config } from "../../config";
-import { setPage, setKeyword } from "../../features/Products/actions";
-import { deleteProduct } from "../../api/product";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import {
+  fetchProgress,
+  setKeyword,
+  setPage,
+} from "../../features/Progress/actions";
+import { deleteProgress } from "../../api/progress";
+import { confirmAlert } from "react-confirm-alert";
+import ToastComponent from "../../components/ToastComponent";
 
 const ManagementProgress = () => {
   let dispatch = useDispatch();
   const { params } = useRouteMatch();
-  let [status, setStatus] = React.useState("process");
-  let products = useSelector((state) => state.products);
-  let [delstatus, setDelstatus] = React.useState(0);
+  const progress = useSelector((state) => state.progress);
+  const [status, setStatus] = React.useState("process");
+  const [delstatus, setDelstatus] = React.useState(0);
   const history = useHistory();
 
   React.useEffect(() => {
     setStatus("process");
-    // dispatch(fetchProducts()); //TODO fetch progress api
+    dispatch(fetchProgress(parseInt(params.projectId)));
     setStatus("success");
     setDelstatus(0);
-  }, [dispatch, delstatus, products.currentPage, products.keyword]);
-
-  const notifDelete = () =>
-    toast.success("Delete Success !", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+  }, [dispatch, delstatus, progress.currentPage, progress.keyword]);
 
   const handleClick = () => {
     const username = params.username;
+    const projectId = params.projectId;
     const projectName = params.projectName;
+    history.push(`/progress/tambah/${username}/${projectId}/${projectName}`);
+  };
 
-    history.push(`/progress/tambah/${username}/${projectName}`);
+  const handleEdit = (progressId) => {
+    const username = params.username;
+    const projectName = params.projectName;
+    history.push(`/progress/edit/${username}/${projectName}/${progressId}`);
+  };
+
+  const handlePreview = () => {
+    const username = params.username;
+    const projectId = params.projectId;
+    const projectName = params.projectName;
+    history.push(`/progress/preview/${username}/${projectName}/${projectId}`);
+  };
+
+  const handleDelete = (progressId, title) => {
+    confirmAlert({
+      title: "KONFIRMASI HAPUS..!",
+      message: `Apakah progress "${title}" ingin dihapus?`,
+      closeOnEscape: true,
+      closeOnClickOutside: false,
+      keyCodeForClose: [8, 32],
+      buttons: [
+        {
+          label: "Ya",
+          onClick: () => {
+            ToastComponent("success", "Delete progress berhasil!");
+            deleteProgress(progressId);
+            setDelstatus(1);
+          },
+        },
+        {
+          label: "Tidak",
+          onClick: () => {},
+        },
+      ],
+    });
   };
 
   const columns = [
     {
       Header: "Gambar",
       accessor: (items) => {
+        const images = items.images;
         return (
-          <img
-            style={{ height: 40 }}
-            src={`${config.api_host}/upload/${items.image_url}`}
-            alt="gambarProduk"
-          />
+          <div
+            style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
+          >
+            {images.map((image, index) => (
+              <img
+                key={index}
+                src={`${config.api_host}/public/upload/${image.imageUrl}`}
+                alt={`${index + 1}`}
+                style={{ width: "50px", height: "auto", marginRight: "5px" }}
+              />
+            ))}
+          </div>
         );
       },
     },
-    { Header: "Nama", accessor: "name" },
-    { Header: "Harga", accessor: (items) => formatRupiah(items.price) },
-    { Header: "Diskon", accessor: "discount" },
-    {
-      Header: "Kategori",
-      accessor: (items) => {
-        return <Badge color="blue">{items.category.name}</Badge>;
-      },
-    },
+    { Header: "Nama", accessor: "title" },
+    { Header: "Descripsi", accessor: "desc" },
     {
       Header: "Action",
       accessor: (items) => {
         return (
           <div>
-            <Link to={`/edit-produk/${items._id}`}>
-              <ButtonCircle icon={<FaEdit />} />
-            </Link>
-
             <ButtonCircle
-              onClick={() => {
-                if (window.confirm("Delete this product ?")) {
-                  deleteProduct(items._id);
-                  notifDelete();
-                  setDelstatus(1);
-                }
-              }}
+              icon={<FaEdit />}
+              onClick={() => handleEdit(items.id)}
+            />
+            <ButtonCircle
               icon={<FaTrash />}
+              onClick={() => handleDelete(items.id, items.title)}
             />
           </div>
         );
@@ -108,7 +134,7 @@ const ManagementProgress = () => {
   if (status === "process") {
     return (
       <LayoutOne>
-        <div className="text-center py-10">
+        <div className="text-center py-20 my-20">
           <div className="inline-block">
             <BounceLoader color="red" />
           </div>
@@ -117,13 +143,32 @@ const ManagementProgress = () => {
     );
   }
 
+  const totalData =
+    progress?.data?.data?.length > 5
+      ? progress?.data?.data?.length + 15
+      : progress?.data?.data?.length + 5;
+
   return (
     <LayoutOne size="large">
       <div>
         <TopBar />
         <Text as="h3">{`Data Progress ${params.projectName}`}</Text>
         <br />
-        <Button onClick={handleClick}>Tambah baru</Button>
+        <Responsive desktop={2} justify="between" items="center">
+          <Button onClick={handleClick}>Tambah Progress</Button>
+          {progress?.data?.data?.length > 0 && (
+            <div className="mr-5 text-right">
+              <Button
+                className="inline-block text-red-600 font-bold"
+                onClick={handlePreview}
+                color={"orange"}
+              >
+                Preview
+              </Button>
+            </div>
+          )}
+        </Responsive>
+
         <ToastContainer
           position="bottom-center"
           autoClose={5000}
@@ -139,7 +184,7 @@ const ManagementProgress = () => {
         <div className="w-full text-center mb-10 mt-5">
           <InputText
             fullRound
-            value={products.keyword}
+            value={progress.keyword}
             placeholder="cari progress"
             fitContainer
             iconAfter={<ButtonCircle icon={<FaFilter />} />}
@@ -148,27 +193,29 @@ const ManagementProgress = () => {
             }}
           />
         </div>
-        <br />
-        {products.data.length ? (
+        {progress?.status === "success" ? (
           <Table
-            items={products.data}
+            primaryKey={"id"}
+            items={progress?.data?.data}
             columns={columns}
-            totalItems={products.totalItems + 15}
-            page={products.currentPage}
-            isLoading={products.status === "process"}
-            perPage={products.perpage}
+            totalItems={totalData}
+            page={progress?.currentPage}
+            perPage={progress?.perPage}
+            isLoading={progress?.status === "process"}
             onPageChange={(page) => dispatch(setPage(page))}
-            primaryKey={"_id"}
           />
         ) : (
-          <LayoutOne size="medium">
-            <CardAlert
-              title={`Data Progress kosong`}
-              message="Belum ada data progress."
-            />
+          <LayoutOne>
+            <div className="text-center py-20 my-20">
+              <div className="inline-block">
+                <BounceLoader color="red" />
+              </div>
+            </div>
           </LayoutOne>
         )}
       </div>
+      <br />
+      <br />
     </LayoutOne>
   );
 };

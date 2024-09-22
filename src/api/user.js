@@ -10,6 +10,7 @@ export async function getAllUser(params) {
 
   return await axios
     .get(`${config.api_host}/api/users`, {
+      params,
       headers: {
         authorization: `${token}`,
       },
