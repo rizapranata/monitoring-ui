@@ -13,7 +13,7 @@ import { getAllProgress } from "../../api/progress";
 
 const PreviewProgress = () => {
   const { params } = useRouteMatch();
-  console.log("params:", params);
+  console.log("params--->:", params);
   const [status, setStatus] = React.useState("process");
   const [progressData, setProgressData] = React.useState([]);
   const [fullScreenImage, setFullScreenImage] = React.useState(null);
@@ -127,7 +127,7 @@ const PreviewProgress = () => {
     <LayoutOne size="large">
       <div>
         <TopBar />
-        <Text as={"h5"}>{`Preview progress ${params.projectName}`}</Text>
+        <Text as={"h5"}>{`Preview progress`}</Text>
         <br />
         <ToastContainer
           position="bottom-center"

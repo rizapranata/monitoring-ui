@@ -70,7 +70,7 @@ const Project = () => {
         ],
       });
     } else {
-      history.push(`/preview/${customer}/${projectName}/${projectId}`);
+      history.push(`/preview/${projectId}`);
     }
   };
 

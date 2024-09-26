@@ -59,10 +59,10 @@ const ManagementProgress = () => {
   };
 
   const handlePreview = () => {
-    const username = params.username;
+    // const username = params.username;
+    // const projectName = params.projectName;
     const projectId = params.projectId;
-    const projectName = params.projectName;
-    history.push(`/progress/preview/${username}/${projectName}/${projectId}`);
+    history.push(`/progress/preview/${projectId}`);
   };
 
   const handleDelete = (progressId, title) => {

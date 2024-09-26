@@ -20,7 +20,7 @@ export default function TopBar() {
       <div className="mr-5 text-right mt-5">
         <Link to={auth?.user ? "/account" : "/login"}>
           <div className="mr-2 inline-block text-red-600 font-bold">
-            {auth?.user?.name}
+            {auth?.user !== null ? auth?.user?.name : "Anonymouse"}
           </div>
           <ButtonCircle icon={<FaUser />} />
         </Link>

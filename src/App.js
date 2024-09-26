@@ -111,12 +111,12 @@ function App() {
           <GuardClientRoute path="/project">
             <Project />
           </GuardClientRoute>
-          <GuardAdminRoute path="/progress/preview/:customer/:projectName/:projectId">
+          <GuardAdminRoute path="/progress/preview/:projectId">
             <PreviewProgress />
           </GuardAdminRoute>
-          <GuardClientRoute path="/preview/:customer/:projectName/:projectId">
+          <GuestOnlyRoute path="/preview/:projectId">
             <PreviewProgress />
-          </GuardClientRoute>
+          </GuestOnlyRoute>
           <GuardDoctorRoute path="/rekam-medis">
             <MedicalRecord />
           </GuardDoctorRoute>

@@ -26,20 +26,14 @@ export async function getProgress(params) {
 }
 
 export async function getAllProgress() {
-  let { token } = localStorage.getItem("auth")
-    ? JSON.parse(localStorage.getItem("auth"))
-    : {};
+  // let { token } = localStorage.getItem("auth")
+  //   ? JSON.parse(localStorage.getItem("auth"))
+  //   : {};
 
-  console.log("getAllProgress dipanggil");
-  const params = {};
+  // const params = {};
 
   return await axios
-    .get(`${config.api_host}/api/progresses`, {
-      params,
-      headers: {
-        authorization: `${token}`,
-      },
-    })
+    .get(`${config.api_host}/api/progresses`)
     .then((res) => {
       return res;
     })
@@ -48,6 +42,8 @@ export async function getAllProgress() {
         console.log("error response: ", error.response);
       }
     });
+
+  // return await axios.get(`${config.api_host}/api/progresses`);
 }
 
 export async function getProgressDetail(progressId) {
