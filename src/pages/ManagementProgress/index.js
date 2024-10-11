@@ -10,7 +10,6 @@ import {
   Table,
   InputText,
   ButtonCircle,
-  CardAlert,
   Responsive,
 } from "upkit";
 import FaFilter from "@meronex/icons/fa/FaFilter";
@@ -43,7 +42,7 @@ const ManagementProgress = () => {
     dispatch(fetchProgress(parseInt(params.projectId)));
     setStatus("success");
     setDelstatus(0);
-  }, [dispatch, delstatus, progress.currentPage, progress.keyword]);
+  }, [dispatch, delstatus, progress.currentPage, progress.keyword, params.projectId]);
 
   const handleClick = () => {
     const username = params.username;

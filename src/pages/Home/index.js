@@ -6,7 +6,6 @@ import {
   Responsive,
   LayoutOne,
   Card,
-  Text,
   CardError,
   FormControl,
   InputText,
@@ -115,13 +114,13 @@ export default function Home() {
         <div>
           <div className="items-center justify-left mt-5">
             <h1 className="text-3xl font-bold text-black-100">{`Selamat datang..!`}</h1>
-            <h3 className="text-2x1 text-black-100 mb-5">{`Untuk melihat progress project, masukkan no resi yang sudah anda dapatkan dari Admin.`}</h3>
+            <h3 className="text-2x1 text-black-100 mb-5">{`Untuk melihat progress project, masukan no resi yang sudah anda dapatkan dari Admin.`}</h3>
           </div>
           <div className="flex items-center justify-center py-20 my-20">
             <div className="w-full max-w-lg">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl
-                  label="Masukkan no Resi"
+                  label="Masukan No Resi"
                   errorMessage={errors.noResi?.message}
                   color="black"
                 >

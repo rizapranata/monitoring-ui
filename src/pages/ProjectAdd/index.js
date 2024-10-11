@@ -15,6 +15,7 @@ import { rules } from "./validations";
 import { userManagementData } from "../../hooks/userManagement";
 import { createProject } from "../../api/project";
 import { useRouteMatch } from "react-router-dom";
+import { confirmAlert } from "react-confirm-alert";
 import { toast } from "react-toastify";
 
 const ProjectAdd = () => {
@@ -57,7 +58,21 @@ const ProjectAdd = () => {
     console.log("formhook:", payload);
     const { data } = await createProject(payload);
 
-    if (data.error) {
+    if (data === undefined) {
+      console.log("Error create Project");
+      confirmAlert({
+        title: "Oops.. terjadi kesalahan!",
+        message: `Project dengan nama "${payload.name}" sudah dibuat, ganti dengan nama project lain. `,
+        closeOnEscape: true,
+        closeOnClickOutside: false,
+        keyCodeForClose: [8, 32],
+        buttons: [
+          {
+            label: "Ok",
+            onClick: () => {},
+          },
+        ],
+      });
       return;
     } else {
       notifSuccessCreate();

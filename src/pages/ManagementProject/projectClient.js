@@ -15,7 +15,6 @@ import FaEdit from "@meronex/icons/fa/FaEdit";
 import FaFilter from "@meronex/icons/fa/FaFilter";
 import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
-import { useDispatch, useSelector } from "react-redux";
 import { userManagementData } from "../../hooks/userManagement";
 import { useParams } from "react-router-dom";
 import { getAllProject } from "../../api/project";
@@ -24,7 +23,7 @@ const ProjectClient = () => {
   const [statusData, setStatusData] = React.useState("process");
   const [allProject, setAllProject] = React.useState([]);
   const { role } = useParams();
-  const { data, setPage, setSearch, status, page, limit, count } =
+  const { data, setPage, setSearch, status, page, limit } =
     userManagementData();
   const dataClient = data.filter((item) => item.role === "client");
 

@@ -10,24 +10,51 @@ import "react-step-progress/dist/index.css";
 import { config } from "../../config";
 import "../../App.css";
 import { getAllProgress } from "../../api/progress";
+import { getAllProject } from "../../api/project";
+import { getPayment } from "../../api/payment";
 
-const PreviewProgress = () => {
+const PreviewProgressUser = () => {
   const { params } = useRouteMatch();
   const [status, setStatus] = React.useState("process");
+  const [payments, setPayments] = React.useState([]);
+  const [allProject, setAllProject] = React.useState([]);
   const [progressData, setProgressData] = React.useState([]);
   const [fullScreenImage, setFullScreenImage] = React.useState(null);
   const scrollRef = useRef(null);
+  const resiNumber = params.projectId.split("0")[0];
+  const project = allProject.find((data) => data.id === parseInt(resiNumber));
 
   let progressByProjectId = progressData?.filter(
-    (item) => item.projectId === parseInt(params.projectId)
+    (item) => item.projectId === parseInt(resiNumber)
   );
 
+  const findingByProjectId = payments?.data?.find(
+    (data) => data.projectId === parseInt(resiNumber)
+  );
+
+  React.useEffect(() => {
+    setStatus("process");
+    getAllProject()
+      .then(({ data }) => {
+        setAllProject(data.data);
+      })
+      .finally(() => setStatus("success"));
+  }, []);
 
   React.useEffect(() => {
     setStatus("process");
     getAllProgress()
       .then(({ data }) => {
         setProgressData(data.data);
+      })
+      .finally(() => setStatus("success"));
+  }, []);
+
+  React.useEffect(() => {
+    setStatus("process");
+    getPayment()
+      .then(({ data }) => {
+        setPayments(data);
       })
       .finally(() => setStatus("success"));
   }, []);
@@ -126,7 +153,11 @@ const PreviewProgress = () => {
     <LayoutOne size="large">
       <div>
         <TopBar />
-        <Text as={"h5"}>{`Preview progress`}</Text>
+        <Text as={"h5"}>
+          {findingByProjectId?.resiNumber === params.projectId
+            ? `Project ${project?.name}`
+            : `Project Tidak Ditemukan`}
+        </Text>
         <br />
         <ToastContainer
           position="bottom-center"
@@ -139,7 +170,15 @@ const PreviewProgress = () => {
           draggable
           pauseOnHover
         />
-        {progressByProjectId.length > 0 ? (
+        {findingByProjectId === undefined ||
+        findingByProjectId?.resiNumber !== params.projectId ? (
+          <LayoutOne size="medium">
+            <CardAlert
+              title={`Oops...!`}
+              message="Nomor resi yang Anda masukan salah! Pastikan Anda memasukan no resi dengan benar."
+            />
+          </LayoutOne>
+        ) : progressByProjectId.length > 0 ? (
           <StepProgressBar
             startingStep={0}
             onSubmit={onFormSubmit}
@@ -152,7 +191,7 @@ const PreviewProgress = () => {
           <LayoutOne size="medium">
             <CardAlert
               title={`Data progress kosong!`}
-              message="Belum ada data progress."
+              message={`Belum ada data progress project ${project?.name}.`}
             />
           </LayoutOne>
         )}
@@ -161,4 +200,4 @@ const PreviewProgress = () => {
   );
 };
 
-export default PreviewProgress;
+export default PreviewProgressUser;

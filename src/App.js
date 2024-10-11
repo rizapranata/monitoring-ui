@@ -46,6 +46,7 @@ import ProjectEdit from "./pages/ProjectEdit";
 import PreviewProgress from "./pages/PreviewProgress";
 import Project from "./pages/UserPreview/Project";
 import GuardClientRoute from "./components/GuardClientRoute";
+import PreviewProgressUser from "./pages/PreviewProgressUser";
 
 function App() {
   React.useEffect(() => {
@@ -115,7 +116,7 @@ function App() {
             <PreviewProgress />
           </GuardAdminRoute>
           <GuestOnlyRoute path="/preview/:projectId">
-            <PreviewProgress />
+            <PreviewProgressUser />
           </GuestOnlyRoute>
           <GuardDoctorRoute path="/rekam-medis">
             <MedicalRecord />

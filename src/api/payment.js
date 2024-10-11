@@ -27,21 +27,14 @@ export async function updatePayment(payload) {
     });
 }
 
-export async function getPayment(params) {
-  let { token } = localStorage.getItem("auth")
-    ? JSON.parse(localStorage.getItem("auth"))
-    : {};
+export async function getPayment() {
+  // let { token } = localStorage.getItem("auth")
+  //   ? JSON.parse(localStorage.getItem("auth"))
+  //   : {};
 
-  return await axios
-    .get(`${config.api_host}/api/payment`, {
-      params,
-      headers: {
-        authorization: `${token}`,
-      },
-    })
-    .then((response) => {
-      return response;
-    });
+  return await axios.get(`${config.api_host}/api/payment`).then((response) => {
+    return response;
+  });
 }
 
 export async function getPaymentDetail(paymentId) {

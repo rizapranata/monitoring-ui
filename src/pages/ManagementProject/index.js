@@ -10,7 +10,6 @@ import {
   Table,
   InputText,
   ButtonCircle,
-  CardAlert,
 } from "upkit";
 import FaFilter from "@meronex/icons/fa/FaFilter";
 import FaEdit from "@meronex/icons/fa/FaEdit";
@@ -19,6 +18,7 @@ import { Link } from "react-router-dom";
 import TopBar from "../../components/TopBar";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteProject } from "../../api/project";
+import BisCopy from "@meronex/icons/bi/BisCopy";
 import {
   fetchProject,
   setKeyword,
@@ -28,6 +28,7 @@ import { useRouteMatch } from "react-router-dom";
 import BiCommentDetail from "@meronex/icons/bi/BiCommentDetail";
 import { getPayment, updatePayment } from "../../api/payment";
 import { confirmAlert } from "react-confirm-alert";
+import ToastComponent from "../../components/ToastComponent";
 
 const ManagementProject = () => {
   const dispatch = useDispatch();
@@ -123,7 +124,7 @@ const ManagementProject = () => {
       title: "KONFIRMASI PEMBAYARAN..!",
       message: !payment
         ? `Apakah project "${projName}" sudah lunas?`
-        : `Apakah project "${projName}" belum lunas?`,
+        : `Batalkan status pembayaran untuk project "${projName}"?`,
       closeOnEscape: true,
       closeOnClickOutside: false,
       keyCodeForClose: [8, 32],
@@ -138,6 +139,16 @@ const ManagementProject = () => {
         },
       ],
     });
+  };
+
+  const handleCopy = async (content) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      ToastComponent("success", "Berhasil dicopy!");
+      console.log("Copied to clipboard:", content);
+    } catch (error) {
+      console.error("Unable to copy to clipboard:", error);
+    }
   };
 
   const notifDelete = () =>
@@ -197,6 +208,17 @@ const ManagementProject = () => {
               </button>
               <span className="ml-3 text-gray-500">
                 {checkPayment?.isSettle ? "Sudah Lunas" : "Belum Lunas"}
+              </span>
+            </div>
+            <div className="mt-5 items-center">
+              <ButtonCircle
+                onClick={() => handleCopy(checkPayment?.resiNumber)}
+                icon={<BisCopy />}
+              />
+              <span className="ml-3 text-gray-500">
+                {checkPayment?.resiNumber === undefined
+                  ? "-"
+                  : checkPayment?.resiNumber}
               </span>
             </div>
           </div>

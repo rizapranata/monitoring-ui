@@ -37,7 +37,7 @@ const Project = () => {
     dispatch(fetchProject(user.username));
     setStatus("success");
     setDelstatus(0);
-  }, [dispatch, delstatus, projects.currentPage, projects.keyword]);
+  }, [dispatch, delstatus, projects.currentPage, projects.keyword, user.username]);
 
   React.useEffect(() => {
     setStatus("process");
@@ -56,7 +56,8 @@ const Project = () => {
   };
 
   const handlePreview = (customer, projectId, projectName, paymentStatus) => {
-    if (!paymentStatus) {
+    console.log(projectId);
+    if (!paymentStatus || paymentStatus === undefined) {
       confirmAlert({
         title: "Oops..!",
         message: `Anda belum melakukan pembayaran untuk project "${projectName}". Silahkan melakukan pembayaran dan kembali melihat progress project ini lagi. Terima kasih`,
@@ -71,6 +72,7 @@ const Project = () => {
       });
     } else {
       history.push(`/preview/${projectId}`);
+      console.log("test");
     }
   };
 
@@ -81,6 +83,7 @@ const Project = () => {
     {
       Header: "Action",
       accessor: (items) => {
+        console.log(settled);
         const checkPayment = settled.find(
           (data) => data.projectId === items.id
         );

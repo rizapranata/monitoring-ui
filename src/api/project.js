@@ -26,6 +26,7 @@ export async function createProject(payload) {
         console.log("Error message", error.message);
       }
       console.log(error.config);
+      return error;
     });
 }
 
