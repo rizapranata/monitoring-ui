@@ -36,7 +36,6 @@ const menus = [
       </IconWrapper>
     ),
     url: "/project-client",
-    // url: "/manajement-project",
     guard: "admin",
   },
   {
@@ -49,18 +48,8 @@ const menus = [
     url: "/project",
     guard: "client",
   },
-  // {
-  //   label: "Progress",
-  //   icon: (
-  //     <IconWrapper>
-  //       <MdcProgressWrench />
-  //     </IconWrapper>
-  //   ),
-  //   url: "/manajement-progress",
-  //   guard: "admin",
-  // },
   {
-    label: "Menejemen Admin",
+    label: "Management Admin",
     icon: (
       <IconWrapper>
         <FaUserCog />
@@ -70,7 +59,7 @@ const menus = [
     guard: "superAdmin",
   },
   {
-    label: "Menejemen Client",
+    label: "Management Client",
     icon: (
       <IconWrapper>
         <FiUsers />

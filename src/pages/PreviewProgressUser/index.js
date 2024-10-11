@@ -128,10 +128,27 @@ const PreviewProgressUser = () => {
     </div>
   );
 
+  const formatted = (isoDate) => {
+    const formattedDate = new Date(isoDate).toLocaleDateString("id-ID", {
+      hour: "numeric",
+      minute: "numeric",
+      timeZone: "Asia/Jakarta",
+    });
+    return formattedDate;
+  };
+
   let steps =
     progressByProjectId.length > 0
       ? progressByProjectId.map((project, index) => ({
-          label: project.title,
+          label: (
+            <div>
+              {`${project.title} `}
+              <br />
+              <div style={{fontSize: 10}}>
+                {`${formatted(project.created_at)}`}
+              </div>
+            </div>
+          ),
           content: <StepContent data={project} />,
           validator: stepValidator,
         }))
@@ -186,6 +203,7 @@ const PreviewProgressUser = () => {
             labelClass="step-class"
             secondaryBtnClass="sec-btn-class"
             primaryBtnClass="prim-btn-class"
+            submitBtnName="-"
           />
         ) : (
           <LayoutOne size="medium">

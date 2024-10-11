@@ -22,7 +22,6 @@ const PreviewProgress = () => {
     (item) => item.projectId === parseInt(params.projectId)
   );
 
-
   React.useEffect(() => {
     setStatus("process");
     getAllProgress()
@@ -101,10 +100,27 @@ const PreviewProgress = () => {
     </div>
   );
 
+  const formatted = (isoDate) => {
+    const formattedDate = new Date(isoDate).toLocaleDateString("id-ID", {
+      hour: "numeric",
+      minute: "numeric",
+      timeZone: "Asia/Jakarta",
+    });
+    return formattedDate;
+  };
+
   let steps =
     progressByProjectId.length > 0
       ? progressByProjectId.map((project, index) => ({
-          label: project.title,
+          label: (
+            <div>
+              {`${project.title} `}
+              <br />
+              <div style={{fontSize: 10}}>
+                {`${formatted(project.created_at)}`}
+              </div>
+            </div>
+          ),
           content: <StepContent data={project} />,
           validator: stepValidator,
         }))
@@ -126,7 +142,7 @@ const PreviewProgress = () => {
     <LayoutOne size="large">
       <div>
         <TopBar />
-        <Text as={"h5"}>{`Preview progress`}</Text>
+        <Text as={"h5"}>{`Preview Progress`}</Text>
         <br />
         <ToastContainer
           position="bottom-center"
@@ -147,6 +163,7 @@ const PreviewProgress = () => {
             labelClass="step-class"
             secondaryBtnClass="sec-btn-class"
             primaryBtnClass="prim-btn-class"
+            submitBtnName="-"
           />
         ) : (
           <LayoutOne size="medium">

@@ -2,8 +2,8 @@ const rules = {
   title: {
     required: { value: true, message: "Judul progress tidak boleh kosong." },
     maxLength: {
-      value: 100,
-      message: "Panjang Judul maksimal 100 karakter",
+      value: 20,
+      message: "Panjang Judul maksimal 20 karakter",
     },
     minLength: {
       value: 3,

@@ -142,11 +142,6 @@ const ManagementProgress = () => {
     );
   }
 
-  const totalData =
-    progress?.data?.data?.length > 5
-      ? progress?.data?.data?.length + 15
-      : progress?.data?.data?.length + 5;
-
   return (
     <LayoutOne size="large">
       <div>
@@ -197,7 +192,7 @@ const ManagementProgress = () => {
             primaryKey={"id"}
             items={progress?.data?.data}
             columns={columns}
-            totalItems={totalData}
+            totalItems={progress?.data?.data?.length}
             page={progress?.currentPage}
             perPage={progress?.perPage}
             isLoading={progress?.status === "process"}

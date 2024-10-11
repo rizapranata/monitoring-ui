@@ -239,11 +239,6 @@ const ManagementProject = () => {
     );
   }
 
-  const totalData =
-    parseInt(params.totalProject) > 5
-      ? parseInt(params.totalProject) + 3
-      : parseInt(params.totalProject);
-
   return (
     <LayoutOne size="large">
       <div>
@@ -281,7 +276,7 @@ const ManagementProject = () => {
             primaryKey={"id"}
             items={projects?.data?.data}
             columns={columns}
-            totalItems={totalData}
+            totalItems={parseInt(params.totalProject)}
             page={projects?.currentPage}
             perPage={projects?.perPage}
             isLoading={projects?.status === "process"}

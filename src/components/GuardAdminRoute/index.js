@@ -7,7 +7,11 @@ const GuardRoute = ({ children, ...rest }) => {
 
   return (
     <Route {...rest}>
-      {user.role === "admin" ? children : <Redirect to="/" />}
+      {user.role === "admin" || user.role === "superAdmin" ? (
+        children
+      ) : (
+        <Redirect to="/" />
+      )}
     </Route>
   );
 };
