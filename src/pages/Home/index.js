@@ -68,6 +68,16 @@ const menus = [
     url: "/user/client",
     guard: "superAdmin",
   },
+  {
+    label: "Management Projects",
+    icon: (
+      <IconWrapper>
+        <FaProjectDiagram />
+      </IconWrapper>
+    ),
+    url: "/project-client",
+    guard: "superAdmin",
+  },
 ];
 
 export default function Home() {
