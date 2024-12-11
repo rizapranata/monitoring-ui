@@ -137,7 +137,7 @@ const ManagementUserAdd = () => {
           </FormControl>
 
           <FormControl
-            label={roleUser === "admin" ? "Status Admin" : "Status Dokter"}
+            label={roleUser === "admin" ? "Status Admin" : "Status Client"}
             errorMessage={errors.role?.message}
             color="black"
           >
